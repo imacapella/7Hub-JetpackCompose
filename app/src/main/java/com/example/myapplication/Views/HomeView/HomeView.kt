@@ -17,6 +17,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -88,7 +89,7 @@ fun HomeView(modifier: Modifier = Modifier, navController: NavController, loginV
         }
 
         SearchBar()
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         CategorySection(navController)
         Spacer(modifier = Modifier.height(12.dp))
@@ -126,26 +127,21 @@ fun TitleCircle() {
 
 @Composable
 fun MyCoursesSection(courses: List<CourseModel>, navController: NavController) {
-    Box(
+    LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(4.dp)
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .horizontalScroll(rememberScrollState())
-        ) {
-            courses.forEach { course ->
-                CourseCard(
-                    courseCode = course.courseCode,
-                    courseTitle = course.courseTitle,
-                    instructorName = course.instructorName,
-                    onClick = { 
-                        navController.navigate("course_detail/${course.courseCode}")
-                    }
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-            }
+        items(courses) { course ->
+            CourseCard(
+                courseCode = course.courseCode,
+                courseTitle = course.courseTitle,
+                instructorName = course.instructorName,
+                onClick = {
+                    navController.navigate("course_detail/${course.courseCode}")
+                }
+            )
         }
     }
 }
@@ -248,61 +244,63 @@ fun CategoryCard(
 
 @Composable
 fun CourseCard(
-    courseCode: String, 
-    courseTitle: String, 
+    courseCode: String,
+    courseTitle: String,
     instructorName: String,
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
-            .width(300.dp)
-            .shadow(10.dp)
-            .height(280.dp),
+            .width(350.dp)
+            .height(250.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            ),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF3F3F3)),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onClick
-                )
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
+            // Course code section with light blue background
             Box(
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .background(color = Color(0xFF9EC7F2), shape = RoundedCornerShape(16.dp))
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-                    .width(280.dp)
-                    .height(160.dp),
+                    .fillMaxWidth()
+                    .height(155.dp)
+                    .background(
+                        color = Color(0xFF9EC7F2),
+                        shape = RoundedCornerShape(12.dp)
+                    ),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
-                    modifier = Modifier.align(Alignment.Center),
                     text = courseCode,
-                    fontSize = 64.sp,
-                    color = Color(0xFFFFFFFF),
+                    fontSize = 55.sp,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold
                 )
             }
 
+            // Course title and instructor name
             Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(top = 16.dp)
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text = courseTitle,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
                     color = Color(0xFF342E37)
                 )
                 Text(
                     text = instructorName,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
                     color = Color(0xFF718A39)
                 )
             }

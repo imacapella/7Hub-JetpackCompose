@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -37,6 +38,9 @@ import com.example.myapplication.Utilities.Constants
 import java.util.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 
 import androidx.compose.ui.unit.dp
 
@@ -160,7 +164,8 @@ fun ChatListScreen(
                 }) { chat ->
                     ChatListItem(
                         chat = chat,
-                        onClick = { onChatClick(chat.chatId) }
+                        onClick = { onChatClick(chat.chatId) },
+                        onDeleteClick = { viewModel.deleteChat(chat.chatId) }
                     )
                 }
             }
@@ -185,6 +190,10 @@ fun ChatListScreen(
             onUserSelected = { user ->
                 viewModel.createNewChat(user)
                 showNewChatDialog = false
+            },
+            selectedTab = selectedTab,
+            onGroupCreate = { users, groupName ->
+                viewModel.createGroupChat(users, groupName)
             }
         )
     }
@@ -222,47 +231,88 @@ fun TabButton(
 @Composable
 fun ChatListItem(
     chat: ChatData,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .background(color = Constants.hubBabyBlue, shape = CircleShape),
-            contentAlignment = Alignment.Center
+        Row(
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = chat.chatName.firstOrNull()?.uppercase() ?: "?",
-                color = Color.White,
-                style = MaterialTheme.typography.titleMedium
-            )
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .background(color = Constants.hubBabyBlue, shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = chat.chatName.firstOrNull()?.uppercase() ?: "?",
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = chat.chatName,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Constants.hubDark
+                )
+                Text(
+                    text = chat.lastMessage,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = chat.chatName,
-                style = MaterialTheme.typography.titleMedium,
-                color = Constants.hubDark
-            )
-            Text(
-                text = chat.lastMessage,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+        IconButton(onClick = { showDeleteDialog = true }) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Sohbeti Sil",
+                tint = Color.Gray
             )
         }
     }
+    
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Sohbeti Sil") },
+            text = { Text("Bu sohbeti silmek istediğinizden emin misiniz?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDeleteClick()
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text("Evet")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Hayır")
+                }
+            }
+        )
+    }
+
     Divider(
         modifier = Modifier.padding(start = 82.dp),
         color = Color.LightGray,
@@ -291,26 +341,69 @@ fun formatTimestamp(timestamp: Timestamp): String {
 fun NewChatDialog(
     users: List<UserData>,
     onDismiss: () -> Unit,
-    onUserSelected: (UserData) -> Unit
+    onUserSelected: (UserData) -> Unit,
+    selectedTab: String,
+    onGroupCreate: (List<String>, String) -> Unit
 ) {
+    var selectedUsers by remember { mutableStateOf(setOf<UserData>()) }
+    var groupName by remember { mutableStateOf("") }
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Yeni Sohbet") },
+        title = { Text(if (selectedTab == "Private Chats") "Yeni Sohbet" else "Yeni Grup") },
         text = {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 300.dp)
-            ) {
-                items(users) { user ->
-                    UserListItem(
-                        user = user,
-                        onClick = { onUserSelected(user) }
+            Column {
+                if (selectedTab == "Group Chats") {
+                    OutlinedTextField(
+                        value = groupName,
+                        onValueChange = { groupName = it },
+                        label = { Text("Grup Adı") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp)
                     )
+                }
+                
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 300.dp)
+                ) {
+                    items(users) { user ->
+                        UserListItem(
+                            user = user,
+                            isSelected = selectedUsers.contains(user),
+                            onClick = {
+                                if (selectedTab == "Private Chats") {
+                                    onUserSelected(user)
+                                } else {
+                                    selectedUsers = if (selectedUsers.contains(user)) {
+                                        selectedUsers - user
+                                    } else {
+                                        selectedUsers + user
+                                    }
+                                }
+                            }
+                        )
+                    }
                 }
             }
         },
-        confirmButton = {},
+        confirmButton = {
+            if (selectedTab == "Group Chats") {
+                TextButton(
+                    onClick = {
+                        if (groupName.isNotBlank() && selectedUsers.isNotEmpty()) {
+                            onGroupCreate(selectedUsers.map { it.uid }, groupName)
+                            onDismiss()
+                        }
+                    },
+                    enabled = groupName.isNotBlank() && selectedUsers.isNotEmpty()
+                ) {
+                    Text("Grup Oluştur")
+                }
+            }
+        },
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text("İptal")
@@ -322,6 +415,7 @@ fun NewChatDialog(
 @Composable
 fun UserListItem(
     user: UserData,
+    isSelected: Boolean = false,
     onClick: () -> Unit
 ) {
     Card(
@@ -335,37 +429,93 @@ fun UserListItem(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = user.displayName.firstOrNull()?.uppercase() ?: "?",
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = user.displayName.firstOrNull()?.uppercase() ?: "?",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column {
+                    Text(
+                        text = user.displayName,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = user.email,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column {
-                Text(
-                    text = user.displayName,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = user.email,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Seçildi",
+                    tint = Constants.hubGreen
                 )
             }
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 800)
+@Composable
+fun ChatListScreenPreview() {
+    val fakeChatList = listOf(
+        ChatData(
+            chatId = "1",
+            chatName = "Ahmet Yılmaz",
+            chatType = "PRIVATE",
+            lastMessage = "Merhaba, ödev hakkında konuşabilir miyiz?",
+            lastMessageTimestamp = Timestamp(Date()),
+            participants = listOf("1", "2"),
+            participantNames = mapOf("1" to "Ben", "2" to "Ahmet Yılmaz")
+        ),
+        ChatData(
+            chatId = "2",
+            chatName = "VCD 471 Grup",
+            chatType = "GROUP",
+            lastMessage = "Proje teslim tarihi ne zaman?",
+            lastMessageTimestamp = Timestamp(Date(System.currentTimeMillis() - 3600000)),
+            participants = listOf("1", "2", "3"),
+            participantNames = mapOf("1" to "Ben", "2" to "Ali", "3" to "Ayşe")
+        ),
+        ChatData(
+            chatId = "3",
+            chatName = "Merve Çaşkurlu",
+            chatType = "PRIVATE",
+            lastMessage = "Teşekkür ederim",
+            lastMessageTimestamp = Timestamp(Date(System.currentTimeMillis() - 7200000)),
+            participants = listOf("1", "4"),
+            participantNames = mapOf("1" to "Ben", "4" to "Merve Çaşkurlu")
+        )
+    )
+
+    MaterialTheme {
+        Surface {
+            ChatListScreen(
+                onChatClick = {},
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }

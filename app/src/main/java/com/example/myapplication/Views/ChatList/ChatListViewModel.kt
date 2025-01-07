@@ -15,11 +15,11 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldPath
 import java.util.Date
 
-class ChatListViewModel : ViewModel() {
+open class ChatListViewModel : ViewModel() {
     private val firestore = Firebase.firestore
     private val currentUserId = Firebase.auth.currentUser?.uid
 
-    private val _chats = MutableLiveData<List<ChatData>>()
+    val _chats = MutableLiveData<List<ChatData>>()
     val chats: LiveData<List<ChatData>> = _chats
 
     private val _users = MutableLiveData<List<UserData>>()
@@ -137,46 +137,93 @@ class ChatListViewModel : ViewModel() {
         }
     }
 
-    fun createGroupChat(participantIds: List<String>, groupName: String) {
+    fun deleteChat(chatId: String) {
         currentUserId?.let { userId ->
-            val allParticipants = listOf(userId) + participantIds
-            
-            val chatData = hashMapOf(
-                "type" to "GROUP",
-                "name" to groupName,
-                "createdAt" to Timestamp.now(),
-                "lastMessage" to "",
-                "lastMessageTimestamp" to Timestamp.now(),
-                "participants" to allParticipants
-            )
-
-            firestore.collection("chats")
-                .add(chatData)
-                .addOnSuccessListener { chatRef ->
-                    val chatId = chatRef.id
-
-                    val userChatData = hashMapOf(
-                        "lastMessageTimestamp" to Timestamp.now(),
-                        "unreadCount" to 0
-                    )
-
-                    allParticipants.forEach { participantId ->
+            // Önce chat dokümanını al
+            firestore.collection("chats").document(chatId)
+                .get()
+                .addOnSuccessListener { chatDoc ->
+                    val participants = chatDoc.get("participants") as? List<String> ?: return@addOnSuccessListener
+                    
+                    // Tüm katılımcıların userChats koleksiyonundan sil
+                    participants.forEach { participantId ->
                         firestore.collection("userChats")
                             .document(participantId)
                             .collection("chats")
                             .document(chatId)
-                            .set(userChatData)
+                            .delete()
                     }
 
-                    val message = hashMapOf(
-                        "text" to "Grup oluşturuldu",
-                        "senderId" to userId,
-                        "timestamp" to Timestamp.now(),
-                        "type" to "TEXT",
-                        "status" to "SENT"
+                    // Ana chat dokümanını ve mesajlarını sil
+                    firestore.collection("chats").document(chatId)
+                        .collection("messages")
+                        .get()
+                        .addOnSuccessListener { messages ->
+                            messages.documents.forEach { message ->
+                                message.reference.delete()
+                            }
+                            
+                            // Son olarak chat dokümanını sil
+                            firestore.collection("chats").document(chatId).delete()
+                        }
+                }
+        }
+    }
+
+    fun createGroupChat(participantIds: List<String>, groupName: String) {
+        currentUserId?.let { userId ->
+            val allParticipants = listOf(userId) + participantIds
+            
+            firestore.collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener { currentUserDoc ->
+                    val currentUserName = currentUserDoc.getString("displayName") ?: "Anonim"
+                    
+                    val chatData = hashMapOf(
+                        "type" to "GROUP",
+                        "name" to groupName,
+                        "createdAt" to Timestamp.now(),
+                        "lastMessage" to "",
+                        "lastMessageTimestamp" to Timestamp.now(),
+                        "participants" to allParticipants
                     )
 
-                    chatRef.collection("messages").add(message)
+                    firestore.collection("chats")
+                        .add(chatData)
+                        .addOnSuccessListener { chatRef ->
+                            val chatId = chatRef.id
+
+                            val userChatData = hashMapOf(
+                                "lastMessageTimestamp" to Timestamp.now(),
+                                "unreadCount" to 0
+                            )
+
+                            allParticipants.forEach { participantId ->
+                                firestore.collection("userChats")
+                                    .document(participantId)
+                                    .collection("chats")
+                                    .document(chatId)
+                                    .set(userChatData)
+                            }
+
+                            val message = hashMapOf(
+                                "text" to "Grup oluşturuldu",
+                                "senderId" to userId,
+                                "timestamp" to Timestamp.now()
+                            )
+
+                            chatRef.collection("messages").add(message)
+                                .addOnSuccessListener {
+                                    // Son mesajı güncelle
+                                    chatRef.update(
+                                        mapOf(
+                                            "lastMessage" to "Grup oluşturuldu",
+                                            "lastMessageTimestamp" to Timestamp.now()
+                                        )
+                                    )
+                                }
+                        }
                 }
         }
     }
