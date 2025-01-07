@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +32,7 @@ fun ReviewCoursesScreen(
             .fillMaxSize()
             .background(Color(0xFFF3F3F3))
     ) {
+        // Üstteki başlık ve geri dönme düğmesi
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -53,8 +53,7 @@ fun ReviewCoursesScreen(
                 style = TextStyle(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 25.sp,
-                    color = Color(0xFF5F5464),
-                    textAlign = TextAlign.Center
+                    color = Color(0xFF5F5464)
                 ),
                 modifier = Modifier.weight(1f)
             )
@@ -62,6 +61,7 @@ fun ReviewCoursesScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Kursların listesi
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -81,20 +81,20 @@ fun CourseItem(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth() // Kart genişliği LazyColumn genişliğiyle aynı olur
+            .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .size(width = 369.dp, height = 131.dp), // Kutunun boyutları burada ayarlandı
+            .size(width = 360.dp, height = 142.dp),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9)),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(
-            modifier = Modifier.fillMaxSize() // Box genişliği ve yüksekliği Card'a göre ayarlanır
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
             Row(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize(), // Row genişliği ve yüksekliği Card'a göre ayarlanır
+                modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
@@ -102,11 +102,10 @@ fun CourseItem(
                         .weight(1f)
                         .fillMaxHeight()
                 ) {
-                    // Mavi dikdörtgen arka plan
                     Box(
                         modifier = Modifier
                             .width(116.dp)
-                            .height(46.dp) // Kod arka plan boyutu
+                            .height(46.dp)
                             .background(Color(0xFF85C0FF), RoundedCornerShape(8.dp)),
                         contentAlignment = Alignment.Center
                     ) {
@@ -114,7 +113,7 @@ fun CourseItem(
                             text = course.code,
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
+                                fontSize = 22.sp,
                                 color = Color.White
                             )
                         )
@@ -122,11 +121,10 @@ fun CourseItem(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Yıldızlar
                     Row(
                         modifier = Modifier
-                            .width(112.63.dp) // ReviewScreen ile aynı genişlik
-                            .height(19.76.dp), // ReviewScreen ile aynı yükseklik
+                            .width(112.63.dp)
+                            .height(19.76.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         repeat(5) { index ->
@@ -151,10 +149,9 @@ fun CourseItem(
                 Column(
                     modifier = Modifier
                         .weight(2f)
-                        .padding(start = 20.dp)
-                        .fillMaxHeight(),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Center
+                        .padding(start = 40.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start
                 ) {
                     Text(
                         text = if (course.name == "Interactive Design Studio") {
@@ -180,16 +177,14 @@ fun CourseItem(
                         )
                     )
                 }
-
-                Spacer(modifier = Modifier.width(16.dp)) // Sağdaki yeşil ok için boşluk ayarlandı
             }
-            // Sağ alt köşedeki yeşil ok
+
             IconButton(
                 onClick = { onCourseClick(course) },
                 modifier = Modifier
                     .size(40.dp)
-                    .align(Alignment.BottomEnd) // Yeşil oku sağ alta hizaladık
-                    .padding(8.dp) // Sağ alt köşe boşluk ayarı
+                    .align(Alignment.BottomEnd) // Box içinde sağ alt köşeye hizalama
+                    .padding(bottom = 4.dp)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_right),
@@ -201,6 +196,7 @@ fun CourseItem(
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

@@ -107,7 +107,7 @@ fun ReviewScreen(
 }
 
 @Composable
-fun TabButton(){
+fun TabButton() {
     TabButton()
 }
 
@@ -120,7 +120,7 @@ fun CustomShadowButton(
     Box(
         modifier = Modifier
             .height(60.dp)
-            .width(180.dp),  // Her iki buton için sabit genişlik
+            .width(180.dp),
         contentAlignment = Alignment.Center
     ) {
         Button(
@@ -130,8 +130,7 @@ fun CustomShadowButton(
             },
             modifier = Modifier
                 .height(if (selected) 46.dp else 42.dp)
-                .fillMaxWidth(),  // Box'ın genişliğini tamamen doldur
-                //.padding(horizontal = 4.dp),
+                .fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFF3F3F3)
             ),
@@ -155,8 +154,6 @@ fun CustomShadowButton(
     }
 }
 
-
-
 @Composable
 fun TeacherItem(teacher: Teacher, onTeacherClick: (Teacher) -> Unit) {
     Card(
@@ -171,79 +168,85 @@ fun TeacherItem(teacher: Teacher, onTeacherClick: (Teacher) -> Unit) {
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9))
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Image(
+                painter = painterResource(id = teacher.photo),
+                contentDescription = "Profile Picture",
+                modifier = Modifier
+                    .size(110.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                Image(
-                    painter = painterResource(id = teacher.photo),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .size(110.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Column(
-                    modifier = Modifier.weight(1f)
+                //
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = teacher.name,
                         style = TextStyle(
                             fontFamily = OpenSansSemiBold,
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 20.sp,
+                            fontSize = 17.sp,
                             color = Color(0xFF342E37)
                         )
                     )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .width(112.63.dp) // Figma genişliği
-                            .height(19.76.dp) // Figma yüksekliği
-                    ) {
-                        repeat(5) { index ->
-                            val starIcon = when {
-                                index < teacher.rating.toInt() -> R.drawable.ic_star_filled
-                                index < teacher.rating.toInt() + 1 && teacher.rating % 1 != 0f -> R.drawable.ic_star_half
-                                else -> R.drawable.ic_star_outline
-                            }
+                }
 
-                            Icon(
-                                painter = painterResource(id = starIcon),
-                                contentDescription = null,
-                                tint = Color(0xFF5BC658),
-                                modifier = Modifier
-                                    .size(19.76.dp) // Yıldız boyutunu ayarla
-                            )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .width(112.63.dp)
+                        .height(19.76.dp)
+                ) {
+                    repeat(5) { index ->
+                        val starIcon = when {
+                            index < teacher.rating.toInt() -> R.drawable.ic_star_filled
+                            index < teacher.rating.toInt() + 1 && teacher.rating % 1 != 0f -> R.drawable.ic_star_half
+                            else -> R.drawable.ic_star_outline
                         }
+
+                        Icon(
+                            painter = painterResource(id = starIcon),
+                            contentDescription = null,
+                            tint = Color(0xFF5BC658),
+                            modifier = Modifier.size(19.76.dp)
+                        )
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.width(35.dp))
 
             IconButton(
                 onClick = { onTeacherClick(teacher) },
                 modifier = Modifier
                     .size(40.dp)
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp)
+                    .align(Alignment.Bottom)
+                    .padding(bottom = 4.dp) // İkonun biraz daha aşağıda görünmesini sağlar
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_right),
                     contentDescription = "Arrow",
                     tint = Color(0xFF379634),
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier
+                        .size(34.dp)
+                        .padding(bottom = 12.dp)
                 )
             }
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
