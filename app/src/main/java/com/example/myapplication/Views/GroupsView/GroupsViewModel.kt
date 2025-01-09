@@ -31,11 +31,11 @@ class GroupsViewModel : ViewModel() {
         _groups.value = groupsList
     }
 
-   /* fun createNewGroup(name: String) {
+    fun createNewGroup(name: String) {
         val newGroup = Group(
             id = (groups.value.size + 1).toString(),
             name = name
         )
         _groups.value = _groups.value + newGroup
-    }*/
+    }
 }

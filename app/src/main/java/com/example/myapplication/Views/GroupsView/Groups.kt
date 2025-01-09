@@ -16,6 +16,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.Utilities.Constants
+import androidx.compose.runtime.setValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +36,8 @@ fun GroupsScreen(
     onGroupClick: (Group) -> Unit = {}
 ) {
     val groups by viewModel.groups.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
+    var newGroupName by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -73,7 +78,7 @@ fun GroupsScreen(
             contentAlignment = Alignment.Center
         ) {
             Button(
-                onClick = { /* Yeni grup oluşturma */ },
+                onClick = { showDialog = true  },
                 modifier = Modifier
                     .padding(16.dp)
                     .height(32.dp)
@@ -96,6 +101,38 @@ fun GroupsScreen(
                 }
             }
         }
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Create New Group") },
+                text = {
+                    TextField(
+                        value = newGroupName,
+                        onValueChange = { newGroupName = it },
+                        placeholder = { Text("Enter group name") }
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            if (newGroupName.isNotBlank()) {
+                                viewModel.createNewGroup(newGroupName)
+                                newGroupName = ""
+                                showDialog = false
+                            }
+                        }
+                    ) {
+                        Text("Create")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { showDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
+
 
         // Groups List
         LazyColumn(
