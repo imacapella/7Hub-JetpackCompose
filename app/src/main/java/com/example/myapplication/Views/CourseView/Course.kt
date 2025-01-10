@@ -1,6 +1,5 @@
 package com.example.myapplication.Views.CourseView
 
-import android.graphics.drawable.Drawable.ConstantState
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.text.style.TextOverflow
@@ -25,6 +25,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.DataLayer.Models.CourseModel
 import com.example.myapplication.Utilities.Constants
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import com.example.myapplication.R
 
 
 // Composable Screen
@@ -48,8 +52,9 @@ fun CoursesScreen(
             title = {
                 Text(
                     text = "Courses",
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(start = 110.dp)
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 25.sp,
+                    modifier = Modifier.padding(start = 100.dp) // Başlığı sağa kaydırmak için padding
                 )
             },
             navigationIcon = {
@@ -158,7 +163,7 @@ fun CourseCard(
 ) {
     Card(
         modifier = Modifier
-            .width(438.dp)
+            .width(369.dp)
             .height(95.dp)
             .padding(5.dp)
             .clickable(onClick = onClick),
@@ -177,27 +182,26 @@ fun CourseCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Course Code Badge
-            Box(
+            Surface(
                 modifier = Modifier
-                    .width(100.dp) // Sabit genişlik
-                    .height(36.dp), // Sabit yükseklik
-                contentAlignment = Alignment.Center // İçeriği ortala
+                    .width(116.dp)
+                    .height(46.dp),
+                color = Constants.hubBabyBlue,
+                shape = MaterialTheme.shapes.small
             ) {
-                Surface(
-                    color = Constants.hubBabyBlue,
-                    shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.fillMaxSize()
+                Box(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .height(34.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = course.courseCode,
-                            color = Constants.hubWhite,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
+                    Text(
+                        text = course.courseCode,
+                        color = Constants.hubWhite,
+                        fontSize = 25.sp,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Normal
+                    )
                 }
             }
 

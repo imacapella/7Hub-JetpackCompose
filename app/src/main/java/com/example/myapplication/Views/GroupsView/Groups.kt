@@ -24,13 +24,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.Utilities.Constants
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupsScreen(
     viewModel: GroupsViewModel = viewModel(),
     onNavigateBack: () -> Unit = {},
-    onGroupClick: (Group) -> Unit = {}
+    onGroupClick: (String) -> Unit = {}
 ) {
     val groups by viewModel.groups.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
@@ -45,16 +50,12 @@ fun GroupsScreen(
         // Top Bar
         TopAppBar(
             title = {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Groups",
-                        fontSize = 20.sp,
-                        color = Constants.hubDark
-                    )
-                }
+                Text(
+                    text = "Groups",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 25.sp,
+                    modifier = Modifier.padding(start = 110.dp)
+                )
             },
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
@@ -66,7 +67,7 @@ fun GroupsScreen(
                 }
             },
             colors = TopAppBarDefaults.smallTopAppBarColors(
-                containerColor = Constants.hubWhite
+                containerColor = Color(0xFFF3F3F3)
             )
         )
 
@@ -148,9 +149,21 @@ fun GroupsScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(groups) { group ->
+                val isUserInGroup = viewModel.isUserInGroup(group.id)
                 GroupCard(
                     group = group,
-                    onClick = { onGroupClick(group) }
+                    onClick = { 
+                        if (isUserInGroup) {
+                            onGroupClick(group.id)
+                        }
+                    },
+                    onJoinClick = {
+                        viewModel.joinGroup(group.id) {
+                            // Başarılı katılım sonrası chat listesine eklenir
+                            onGroupClick(group.id)
+                        }
+                    },
+                    isUserInGroup = isUserInGroup
                 )
             }
         }
@@ -160,14 +173,19 @@ fun GroupsScreen(
 @Composable
 fun GroupCard(
     group: Group,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onJoinClick: () -> Unit,
+    isUserInGroup: Boolean
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(95.dp)
             .padding(5.dp)
-            .clickable(onClick = onClick),
+            .clickable(
+                enabled = isUserInGroup,
+                onClick = onClick
+            ),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Constants.hubWhite),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
@@ -192,28 +210,102 @@ fun GroupCard(
                 )
             }
 
-            // Group Name
-            Text(
-                text = group.name,
-                style = MaterialTheme.typography.bodyMedium,
+            // Group Name and Participant Count
+            Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 16.dp),
-                color = Constants.hubDark
-            )
+                    .padding(start = 16.dp)
+            ) {
+                Text(
+                    text = group.name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Constants.hubDark
+                )
+                Text(
+                    text = "${group.participants.size} üye",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Constants.hubGray
+                )
+            }
 
-            // Arrow Icon
-            Icon(
-                imageVector = Icons.Default.ChevronRight,
-                contentDescription = "View Group",
-                tint = Constants.hubGray
-            )
+            // Join Button or Arrow Icon
+            if (!isUserInGroup) {
+                Button(
+                    onClick = onJoinClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Constants.hubGreen
+                    ),
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(36.dp)
+                ) {
+                    Text("Katıl", color = Constants.hubWhite)
+                }
+            } else {
+                Icon(
+                    imageVector = Icons.Default.ChevronRight,
+                    contentDescription = "View Group",
+                    tint = Constants.hubGray
+                )
+            }
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewGroupsScreen() {
-    GroupsScreen()
+            GroupsScreen()
+}
+
+// Yeni Dialog Preview'ı
+@Preview(showBackground = true)
+@Composable
+fun PreviewNewGroupDialog() {
+    var showDialog by remember { mutableStateOf(true) }
+    var newGroupName by remember { mutableStateOf("") }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Create New Group") },
+            text = {
+                Column {
+                    TextField(
+                        value = newGroupName,
+                        onValueChange = { newGroupName = it },
+                        placeholder = { Text("Enter group name") }
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Create")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+// Yeni Card Preview'ı
+@Preview(showBackground = true)
+@Composable
+fun PreviewGroupCard() {
+    val previewGroup = Group(
+        id = "1",
+        name = "Yazılım Grubu",
+        participants = listOf("user1", "user2", "user3")
+    )
+
+    GroupCard(
+        group = previewGroup,
+        onClick = {},
+        onJoinClick = {},
+        isUserInGroup = true
+    )
 }

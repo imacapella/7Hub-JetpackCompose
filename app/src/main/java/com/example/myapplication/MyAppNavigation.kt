@@ -33,6 +33,11 @@ import com.example.myapplication.Views.ReviewScreen.ReviewScreen
 import com.example.myapplication.Views.CourseView.CourseDetailScreen
 import com.example.myapplication.Views.CourseView.CourseDetailViewModel
 import com.example.myapplication.Views.ReviewScreen.ReviewCoursesScreen
+import com.example.myapplication.Views.ClubsView.ClubsScreen
+import com.example.myapplication.Views.ClubsView.ClubsViewModel
+import com.example.myapplication.Views.ClubsView.ClubsScreen
+import com.example.myapplication.Views.ClubsView.ClubDetailScreen
+import com.example.myapplication.Views.ClubsView.ClubDetailViewModel
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Home : BottomNavItem("home", Icons.Default.Home, "Home")
@@ -164,7 +169,10 @@ fun MainScreen(loginViewModel: LoginViewModel) {
 
             composable("groups") {
                 GroupsScreen(
-                    onNavigateBack = { navController.navigateUp() }
+                    onNavigateBack = { navController.navigateUp() },
+                    onGroupClick = { groupId ->
+                        navController.navigate("chat/$groupId")
+                    }
                 )
             }
 
@@ -189,7 +197,7 @@ fun MainScreen(loginViewModel: LoginViewModel) {
 
             composable("reviews") {
                 ReviewScreen(
-                    onTeacherClick = { /* Teacher'a tıklandığında yapılacak işlem */ }
+
                 )
             }
 
@@ -204,6 +212,27 @@ fun MainScreen(loginViewModel: LoginViewModel) {
             composable("coursesReview") {
                 ReviewCoursesScreen(
                     onNavigateBack = { navController.navigateUp() }
+                )
+            }
+
+            composable("clubs") {
+                ClubsScreen(
+                    onNavigateBack = { navController.navigateUp() },
+                    onClubClick = { club ->
+                        navController.navigate("club_detail/${club.clubId}")
+                    }
+                )
+            }
+
+            composable(
+                "club_detail/{clubId}",
+                arguments = listOf(navArgument("clubId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val clubId = backStackEntry.arguments?.getString("clubId") ?: return@composable
+                ClubDetailScreen(
+                    viewModel = ClubDetailViewModel(),
+                    onBackClick = { navController.navigateUp() },
+                    onJoinClubClick = { /* Kulübe katılma işlemi */ }
                 )
             }
         }
