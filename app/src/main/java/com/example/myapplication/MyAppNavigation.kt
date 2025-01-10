@@ -164,7 +164,10 @@ fun MainScreen(loginViewModel: LoginViewModel) {
 
             composable("groups") {
                 GroupsScreen(
-                    onNavigateBack = { navController.navigateUp() }
+                    onNavigateBack = { navController.navigateUp() },
+                    onGroupClick = { groupId ->
+                        navController.navigate("chat/$groupId")
+                    }
                 )
             }
 

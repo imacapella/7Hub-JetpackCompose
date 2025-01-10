@@ -1,5 +1,6 @@
 package com.example.myapplication.Views.GroupsView
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,6 +13,7 @@ import com.google.firebase.ktx.Firebase
 data class Group(
     val id: String,
     val name: String,
+    val participants: List<String> = emptyList(),
     val iconUrl: String? = null
 )
 
@@ -22,45 +24,72 @@ class GroupsViewModel : ViewModel() {
     private val currentUserId = Firebase.auth.currentUser?.uid
 
     init {
-        loadGroups()
+        loadAllGroups()
     }
 
-    private fun loadGroups() {
+    private fun loadAllGroups() {
+        firestore.collection("chats")
+            .whereEqualTo("type", "GROUP")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("GroupsViewModel", "Error loading groups", error)
+                    return@addSnapshotListener
+                }
+
+                val groupsList = snapshot?.documents?.map { doc ->
+                    Group(
+                        id = doc.id,
+                        name = doc.getString("name") ?: "Unnamed Group",
+                        participants = (doc.get("participants") as? List<String>) ?: emptyList()
+                    )
+                } ?: emptyList()
+
+                _groups.value = groupsList
+            }
+    }
+
+    fun joinGroup(groupId: String, onSuccess: () -> Unit) {
         currentUserId?.let { userId ->
-            firestore.collection("userChats")
-                .document(userId)
-                .collection("chats")
-                .whereEqualTo("type", "GROUP")
-                .get()
-                .addOnSuccessListener { result ->
-                    val groupIds = result.map { it.id }
-                    if (groupIds.isNotEmpty()) {
-                        firestore.collection("chats")
-                            .whereIn("chatId", groupIds)
-                            .get()
-                            .addOnSuccessListener { chatResults ->
-                                val loadedGroups = chatResults.map { doc ->
-                                    Group(
-                                        id = doc.id,
-                                        name = doc.getString("name") ?: "Unnamed Group",
-                                        iconUrl = doc.getString("iconUrl")
-                                    )
-                                }
-                                _groups.value = loadedGroups
-                            }
-                    } else {
-                        _groups.value = emptyList()
-                    }
+            val groupRef = firestore.collection("chats").document(groupId)
+            
+            firestore.runTransaction { transaction ->
+                val groupDoc = transaction.get(groupRef)
+                val participants = groupDoc.get("participants") as? List<String> ?: listOf()
+                
+                if (!participants.contains(userId)) {
+                    // Gruba katılımcı olarak ekle
+                    transaction.update(groupRef, "participants", participants + userId)
+                    
+                    // UserChats koleksiyonuna ekle
+                    val userChatData = hashMapOf(
+                        "lastMessageTimestamp" to Timestamp.now(),
+                        "unreadCount" to 0
+                    )
+                    
+                    val userChatRef = firestore.collection("userChats")
+                        .document(userId)
+                        .collection("chats")
+                        .document(groupId)
+                    
+                    transaction.set(userChatRef, userChatData)
                 }
-                .addOnFailureListener {
-                    println("Error loading groups: ${it.message}")
-                }
+            }.addOnSuccessListener {
+                onSuccess()
+            }.addOnFailureListener { e ->
+                Log.e("GroupsViewModel", "Error joining group", e)
+            }
         }
+    }
+
+    fun isUserInGroup(groupId: String): Boolean {
+        val group = _groups.value.find { it.id == groupId }
+        return group?.participants?.contains(currentUserId) == true
     }
 
     fun createNewGroup(name: String, participantIds: List<String>) {
         currentUserId?.let { userId ->
-            val allParticipants = participantIds + userId
+            val allParticipants = listOf(userId) + participantIds
+            
             val newGroupRef = firestore.collection("chats").document()
             val groupData = hashMapOf(
                 "name" to name,
@@ -73,21 +102,40 @@ class GroupsViewModel : ViewModel() {
 
             newGroupRef.set(groupData)
                 .addOnSuccessListener {
+                    // Tüm katılımcılar için userChats koleksiyonuna ekle
                     allParticipants.forEach { participantId ->
                         val userChatData = hashMapOf(
                             "lastMessageTimestamp" to Timestamp.now(),
                             "unreadCount" to 0
                         )
+                        
                         firestore.collection("userChats")
                             .document(participantId)
                             .collection("chats")
                             .document(newGroupRef.id)
                             .set(userChatData)
                     }
-                    loadGroups() // Yeni grup eklenince güncelle
+
+                    // İlk mesajı ekle
+                    val message = hashMapOf(
+                        "text" to "Grup oluşturuldu",
+                        "senderId" to userId,
+                        "timestamp" to Timestamp.now()
+                    )
+
+                    newGroupRef.collection("messages").add(message)
+                        .addOnSuccessListener {
+                            // Son mesajı güncelle
+                            newGroupRef.update(
+                                mapOf(
+                                    "lastMessage" to "Grup oluşturuldu",
+                                    "lastMessageTimestamp" to Timestamp.now()
+                                )
+                            )
+                        }
                 }
-                .addOnFailureListener {
-                    println("Error creating group: ${it.message}")
+                .addOnFailureListener { e ->
+                    Log.e("GroupsViewModel", "Error creating group", e)
                 }
         }
     }
