@@ -189,7 +189,7 @@ fun MainScreen(loginViewModel: LoginViewModel) {
 
             composable("reviews") {
                 ReviewScreen(
-                    onTeacherClick = { /* Teacher'a tıklandığında yapılacak işlem */ }
+
                 )
             }
 
