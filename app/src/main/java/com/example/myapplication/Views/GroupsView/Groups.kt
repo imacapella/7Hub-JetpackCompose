@@ -24,6 +24,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.Utilities.Constants
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,16 +50,12 @@ fun GroupsScreen(
         // Top Bar
         TopAppBar(
             title = {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Groups",
-                        fontSize = 20.sp,
-                        color = Constants.hubDark
-                    )
-                }
+                Text(
+                    text = "Groups",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 25.sp,
+                    modifier = Modifier.padding(start = 110.dp)
+                )
             },
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
@@ -66,7 +67,7 @@ fun GroupsScreen(
                 }
             },
             colors = TopAppBarDefaults.smallTopAppBarColors(
-                containerColor = Constants.hubWhite
+                containerColor = Color(0xFFF3F3F3)
             )
         )
 
@@ -251,8 +252,60 @@ fun GroupCard(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewGroupsScreen() {
-    GroupsScreen()
+            GroupsScreen()
+}
+
+// Yeni Dialog Preview'ı
+@Preview(showBackground = true)
+@Composable
+fun PreviewNewGroupDialog() {
+    var showDialog by remember { mutableStateOf(true) }
+    var newGroupName by remember { mutableStateOf("") }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Create New Group") },
+            text = {
+                Column {
+                    TextField(
+                        value = newGroupName,
+                        onValueChange = { newGroupName = it },
+                        placeholder = { Text("Enter group name") }
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Create")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+// Yeni Card Preview'ı
+@Preview(showBackground = true)
+@Composable
+fun PreviewGroupCard() {
+    val previewGroup = Group(
+        id = "1",
+        name = "Yazılım Grubu",
+        participants = listOf("user1", "user2", "user3")
+    )
+
+    GroupCard(
+        group = previewGroup,
+        onClick = {},
+        onJoinClick = {},
+        isUserInGroup = true
+    )
 }
