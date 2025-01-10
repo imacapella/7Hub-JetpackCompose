@@ -35,11 +35,19 @@ import com.example.myapplication.Utilities.Constants
 import com.example.myapplication.Views.LoginView.AuthState
 import com.example.myapplication.Views.LoginView.LoginViewModel
 import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.Views.HomeView.HomeViewModel
 
 @Composable
-fun HomeView(modifier: Modifier = Modifier, navController: NavController, loginViewModel: LoginViewModel) {
-
+fun HomeView(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    loginViewModel: LoginViewModel,
+    homeViewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+) {
     val authState by loginViewModel.authState.observeAsState()
+    val userName by homeViewModel.userName.collectAsState()
+    val studentId by homeViewModel.studentId.collectAsState()
+    val courses by homeViewModel.courses.collectAsState()
 
     LaunchedEffect(authState) {
         when (authState) {
@@ -54,13 +62,6 @@ fun HomeView(modifier: Modifier = Modifier, navController: NavController, loginV
         }
     }
 
-    val courses = listOf(
-        CourseModel("VCD 471", "Interactive Design Studio", "Merve Çaşkurlu"),
-        CourseModel("VCD 592", "Internship", "Murat Yilmaz"),
-        CourseModel("VCD 123", "Introduction to Design", "Ayşe Yavuz"),
-        CourseModel("VCD 345", "Sound Studio", "Ali Gür")
-    )
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -69,14 +70,14 @@ fun HomeView(modifier: Modifier = Modifier, navController: NavController, loginV
     ) {
         TitleCircle()
         Text(
-            text = "Hey, Alice!",
+            text = "Hey, ${userName ?: "Student"}!",
             style = MaterialTheme.typography.headlineMedium,
             fontSize = 35.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 2.dp)
         )
         Text(
-            text = "20212345678",
+            text = studentId ?: "",
             fontSize = 16.sp,
             color = Color(0xFF88B04B),
             modifier = Modifier.padding(bottom = 8.dp)
@@ -136,8 +137,8 @@ fun MyCoursesSection(courses: List<CourseModel>, navController: NavController) {
         items(courses) { course ->
             CourseCard(
                 courseCode = course.courseCode,
-                courseTitle = course.courseTitle,
-                instructorName = course.instructorName,
+                courseTitle = course.courseName,
+                instructorName = course.instructor,
                 onClick = {
                     navController.navigate("course_detail/${course.courseCode}")
                 }
@@ -268,7 +269,6 @@ fun CourseCard(
                 .padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Course code section with light blue background
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -287,7 +287,6 @@ fun CourseCard(
                 )
             }
 
-            // Course title and instructor name
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)

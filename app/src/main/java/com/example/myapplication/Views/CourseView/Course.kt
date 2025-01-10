@@ -49,7 +49,7 @@ fun CoursesScreen(
                 Text(
                     text = "Courses",
                     fontSize = 20.sp,
-                    modifier = Modifier.padding(start = 110.dp) // Başlığı sağa kaydırmak için padding
+                    modifier = Modifier.padding(start = 110.dp)
                 )
             },
             navigationIcon = {
@@ -61,7 +61,6 @@ fun CoursesScreen(
                 containerColor = Color(0xFFF3F3F3)
             )
         )
-
 
         // Tabs
         Row(
@@ -84,14 +83,23 @@ fun CoursesScreen(
         }
 
         // Course List
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(courses) { course ->
-                CourseCard(course = course, onClick = { onCourseClick(course) })
+        if (courses.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(courses) { course ->
+                    CourseCard(course = course, onClick = { onCourseClick(course) })
+                }
             }
         }
     }
@@ -150,8 +158,8 @@ fun CourseCard(
 ) {
     Card(
         modifier = Modifier
-            .width(438.dp) // Kart genişliği
-            .height(95.dp) // Kart yüksekliği
+            .width(438.dp)
+            .height(95.dp)
             .padding(5.dp)
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(
@@ -169,15 +177,28 @@ fun CourseCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Course Code Badge
-            Surface(
-                color = Constants.hubBabyBlue,
-                shape = MaterialTheme.shapes.small
+            Box(
+                modifier = Modifier
+                    .width(100.dp) // Sabit genişlik
+                    .height(36.dp), // Sabit yükseklik
+                contentAlignment = Alignment.Center // İçeriği ortala
             ) {
-                Text(
-                    text = course.courseCode,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                    color = Constants.hubWhite
-                )
+                Surface(
+                    color = Constants.hubBabyBlue,
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = course.courseCode,
+                            color = Constants.hubWhite,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             }
 
             // Course Details
@@ -187,14 +208,14 @@ fun CourseCard(
                     .padding(start = 16.dp)
             ) {
                 Text(
-                    text = course.courseTitle,
+                    text = course.courseName,
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Black,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = course.instructorName,
+                    text = course.instructor,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Constants.hubGreen,
                     maxLines = 1,
