@@ -24,6 +24,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.Utilities.Constants
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -251,8 +255,108 @@ fun GroupCard(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewGroupsScreen() {
-    GroupsScreen()
+    MaterialTheme {
+        val previewGroups = listOf(
+            Group(
+                id = "1",
+                name = "Yazılım Grubu",
+                participants = listOf("user1", "user2", "user3")
+            ),
+            Group(
+                id = "2",
+                name = "Tasarım Grubu",
+                participants = listOf("user1", "user4", "user5", "user6")
+            ),
+            Group(
+                id = "3",
+                name = "Proje Grubu",
+                participants = listOf("user2", "user3", "user7")
+            )
+        )
+
+        val previewViewModel = object : GroupsViewModel() {
+            init {
+                _groups.value = previewGroups
+            }
+
+            override fun isUserInGroup(groupId: String): Boolean {
+                return groupId == "1"
+            }
+
+            override fun joinGroup(groupId: String, onSuccess: () -> Unit) {
+                onSuccess()
+            }
+
+            // Firebase bağımlılıklarını önlemek için
+            override fun loadAllGroups() {
+                // Preview için boş implementasyon
+            }
+        }
+
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            GroupsScreen(
+                viewModel = previewViewModel,
+                onNavigateBack = {},
+                onGroupClick = {}
+            )
+        }
+    }
+}
+
+// Yeni Dialog Preview'ı
+@Preview(showBackground = true)
+@Composable
+fun PreviewNewGroupDialog() {
+    var showDialog by remember { mutableStateOf(true) }
+    var newGroupName by remember { mutableStateOf("") }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Create New Group") },
+            text = {
+                Column {
+                    TextField(
+                        value = newGroupName,
+                        onValueChange = { newGroupName = it },
+                        placeholder = { Text("Enter group name") }
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Create")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+// Yeni Card Preview'ı
+@Preview(showBackground = true)
+@Composable
+fun PreviewGroupCard() {
+    val previewGroup = Group(
+        id = "1",
+        name = "Yazılım Grubu",
+        participants = listOf("user1", "user2", "user3")
+    )
+
+    GroupCard(
+        group = previewGroup,
+        onClick = {},
+        onJoinClick = {},
+        isUserInGroup = true
+    )
 }

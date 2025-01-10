@@ -17,8 +17,8 @@ data class Group(
     val iconUrl: String? = null
 )
 
-class GroupsViewModel : ViewModel() {
-    private val _groups = MutableStateFlow<List<Group>>(emptyList())
+open class GroupsViewModel : ViewModel() {
+    protected val _groups = MutableStateFlow<List<Group>>(emptyList())
     val groups: StateFlow<List<Group>> = _groups.asStateFlow()
     private val firestore = FirebaseFirestore.getInstance()
     private val currentUserId = Firebase.auth.currentUser?.uid
@@ -27,7 +27,7 @@ class GroupsViewModel : ViewModel() {
         loadAllGroups()
     }
 
-    private fun loadAllGroups() {
+    protected open fun loadAllGroups() {
         firestore.collection("chats")
             .whereEqualTo("type", "GROUP")
             .addSnapshotListener { snapshot, error ->
@@ -48,7 +48,7 @@ class GroupsViewModel : ViewModel() {
             }
     }
 
-    fun joinGroup(groupId: String, onSuccess: () -> Unit) {
+    open fun joinGroup(groupId: String, onSuccess: () -> Unit) {
         currentUserId?.let { userId ->
             val groupRef = firestore.collection("chats").document(groupId)
             
@@ -81,7 +81,7 @@ class GroupsViewModel : ViewModel() {
         }
     }
 
-    fun isUserInGroup(groupId: String): Boolean {
+    open fun isUserInGroup(groupId: String): Boolean {
         val group = _groups.value.find { it.id == groupId }
         return group?.participants?.contains(currentUserId) == true
     }
