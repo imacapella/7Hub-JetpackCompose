@@ -67,7 +67,6 @@ fun CoursesScreen(
             )
         )
 
-
         // Tabs
         Row(
             modifier = Modifier
@@ -89,14 +88,23 @@ fun CoursesScreen(
         }
 
         // Course List
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(courses) { course ->
-                CourseCard(course = course, onClick = { onCourseClick(course) })
+        if (courses.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(courses) { course ->
+                    CourseCard(course = course, onClick = { onCourseClick(course) })
+                }
             }
         }
     }
@@ -204,14 +212,14 @@ fun CourseCard(
                     .padding(start = 16.dp)
             ) {
                 Text(
-                    text = course.courseTitle,
+                    text = course.courseName,
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Black,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = course.instructorName,
+                    text = course.instructor,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Constants.hubGreen,
                     maxLines = 1,
