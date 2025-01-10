@@ -1,24 +1,34 @@
 package com.example.myapplication.Views.ResetPassword
 
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class ResetPasswordViewModel : ViewModel() {
-    private val _username = MutableStateFlow("")
-    val username = _username.asStateFlow()
+    private val auth = FirebaseAuth.getInstance()
+    
+    private val _email = MutableStateFlow("")
+    val email = _email.asStateFlow()
+    
+    private val _isEmailSent = MutableStateFlow(false)
+    val isEmailSent = _isEmailSent.asStateFlow()
+    
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage = _errorMessage.asStateFlow()
 
-    private val _phoneNumber = MutableStateFlow("")
-    val phoneNumber = MutableStateFlow("")
-
-    fun onUsernameChanged(newUsername: String) {
-        _username.value = newUsername
+    fun onEmailChanged(newEmail: String) {
+        _email.value = newEmail
     }
 
-    fun onPhoneNumberChanged(newPhoneNumber: String) {
-        _phoneNumber.value = newPhoneNumber
+    fun sendResetEmail() {
+        auth.sendPasswordResetEmail(_email.value)
+            .addOnSuccessListener {
+                _isEmailSent.value = true
+                _errorMessage.value = null
+            }
+            .addOnFailureListener { e ->
+                _errorMessage.value = e.message
+            }
     }
-
-    // Şifre sıfırlama işlemi
-    fun resetPassword() {}
 }
