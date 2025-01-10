@@ -26,6 +26,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
@@ -49,16 +50,12 @@ fun GroupsScreen(
         // Top Bar
         TopAppBar(
             title = {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Groups",
-                        fontSize = 20.sp,
-                        color = Constants.hubDark
-                    )
-                }
+                Text(
+                    text = "Groups",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 25.sp,
+                    modifier = Modifier.padding(start = 110.dp)
+                )
             },
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
@@ -70,7 +67,7 @@ fun GroupsScreen(
                 }
             },
             colors = TopAppBarDefaults.smallTopAppBarColors(
-                containerColor = Constants.hubWhite
+                containerColor = Color(0xFFF3F3F3)
             )
         )
 
@@ -258,55 +255,7 @@ fun GroupCard(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewGroupsScreen() {
-    MaterialTheme {
-        val previewGroups = listOf(
-            Group(
-                id = "1",
-                name = "Yazılım Grubu",
-                participants = listOf("user1", "user2", "user3")
-            ),
-            Group(
-                id = "2",
-                name = "Tasarım Grubu",
-                participants = listOf("user1", "user4", "user5", "user6")
-            ),
-            Group(
-                id = "3",
-                name = "Proje Grubu",
-                participants = listOf("user2", "user3", "user7")
-            )
-        )
-
-        val previewViewModel = object : GroupsViewModel() {
-            init {
-                _groups.value = previewGroups
-            }
-
-            override fun isUserInGroup(groupId: String): Boolean {
-                return groupId == "1"
-            }
-
-            override fun joinGroup(groupId: String, onSuccess: () -> Unit) {
-                onSuccess()
-            }
-
-            // Firebase bağımlılıklarını önlemek için
-            override fun loadAllGroups() {
-                // Preview için boş implementasyon
-            }
-        }
-
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            GroupsScreen(
-                viewModel = previewViewModel,
-                onNavigateBack = {},
-                onGroupClick = {}
-            )
-        }
-    }
+            GroupsScreen()
 }
 
 // Yeni Dialog Preview'ı
