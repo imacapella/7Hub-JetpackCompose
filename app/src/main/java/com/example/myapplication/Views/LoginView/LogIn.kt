@@ -41,9 +41,7 @@ fun LoginPage(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    // authState'i authViewModel üzerinden alın
     val authState by loginViewModel.authState.observeAsState()
-
     val context = LocalContext.current
 
     // Auth durumuna göre işlem yap
@@ -89,7 +87,7 @@ fun LoginPage(
             Spacer(modifier = Modifier.height(16.dp))
 
             ForgotPasswordText {
-                navController.navigate("reset_password")
+                navController.navigate("resetpw")
             }
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -207,33 +205,6 @@ fun PasswordView(value: String, onValueChange: (String) -> Unit) {
             cursorColor = customColor,
             containerColor = Color.Transparent
         )
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PhoneNumberTextField(viewModel: ResetPasswordViewModel) {
-    var phoneNumberText by remember { mutableStateOf("") } // Kullanıcının girdiği telefon numarası
-
-    OutlinedTextField(
-        value = phoneNumberText, // TextField'in şu anki değeri
-        onValueChange = { newValue ->
-            phoneNumberText = newValue // Kullanıcı yeni bir şey yazdığında güncellenir
-            viewModel.onPhoneNumberChanged(newValue) // ViewModel'e telefon numarası aktarılabilir
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp) // Yüksekliği ayarlayarak boyutu küçültüyoruz
-            .padding(8.dp),
-        shape = RoundedCornerShape(20.dp), // Daha yuvarlak köşeler
-        label = { Text("Username", color = Constants.hubDark) },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = "Username Icon",
-                tint = Constants.hubGreen
-            )
-        },
     )
 }
 
