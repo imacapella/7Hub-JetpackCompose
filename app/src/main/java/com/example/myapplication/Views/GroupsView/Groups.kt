@@ -13,11 +13,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,7 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.Utilities.Constants
-import androidx.compose.runtime.setValue
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,6 +35,7 @@ fun GroupsScreen(
     val groups by viewModel.groups.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var newGroupName by remember { mutableStateOf("") }
+    val currentUserId = Firebase.auth.currentUser?.uid ?: ""
 
     Column(
         modifier = Modifier
@@ -78,7 +76,7 @@ fun GroupsScreen(
             contentAlignment = Alignment.Center
         ) {
             Button(
-                onClick = { showDialog = true  },
+                onClick = { showDialog = true },
                 modifier = Modifier
                     .padding(16.dp)
                     .height(32.dp)
@@ -101,22 +99,31 @@ fun GroupsScreen(
                 }
             }
         }
+
+        // Grup Oluşturma Diyaloğu
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
                 title = { Text("Create New Group") },
                 text = {
-                    TextField(
-                        value = newGroupName,
-                        onValueChange = { newGroupName = it },
-                        placeholder = { Text("Enter group name") }
-                    )
+                    Column {
+                        TextField(
+                            value = newGroupName,
+                            onValueChange = { newGroupName = it },
+                            placeholder = { Text("Enter group name") }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Group will be created with the current user.")
+                    }
                 },
                 confirmButton = {
                     Button(
                         onClick = {
                             if (newGroupName.isNotBlank()) {
-                                viewModel.createNewGroup(newGroupName)
+                                viewModel.createNewGroup(
+                                    name = newGroupName,
+                                    participantIds = listOf(currentUserId)
+                                )
                                 newGroupName = ""
                                 showDialog = false
                             }
@@ -132,7 +139,6 @@ fun GroupsScreen(
                 }
             )
         }
-
 
         // Groups List
         LazyColumn(
