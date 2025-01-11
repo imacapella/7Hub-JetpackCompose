@@ -41,6 +41,7 @@ import com.example.myapplication.Views.ClubsView.ClubDetailViewModel
 import com.example.myapplication.Views.ReviewScreen.TeacherDetailsScreen
 import com.example.myapplication.Views.ReviewScreen.dummyTeacher1
 import com.example.myapplication.Views.ReviewScreen.dummyTeacher2
+import com.example.myapplication.Views.AccountView.AccountScreen
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Home : BottomNavItem("home", Icons.Default.Home, "Home")
@@ -205,11 +206,13 @@ fun MainScreen(loginViewModel: LoginViewModel) {
             }
 
             composable("account") {
-                // Add your Account screen implementation here
-                // For now, using a placeholder Text
-                Text(
-                    text = "Account Screen",
-                    modifier = Modifier.padding(16.dp)
+                AccountScreen(
+                    onNavigateBack = { navController.navigateUp() },
+                    onSignOut = {
+                        navController.navigate("login") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
                 )
             }
             composable("coursesReview") {
