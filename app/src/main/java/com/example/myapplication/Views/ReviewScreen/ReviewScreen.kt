@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavController
 
 val OpenSansSemiBold = FontFamily(
     Font(R.font.open_sans_semibold)
@@ -47,7 +48,7 @@ fun ReviewScreen(
         Course(id = 1, code = "VCD 471", name = "Interactive Design Studio", instructor = "Merve Çaşkurlu", rating = 5.0f),
         Course(id = 2, code = "VCD 592", name = "Internship", instructor = "Murat Yılmaz", rating = 2.8f)
     ),
-    onTeacherClick: (Teacher) -> Unit = {}
+    navController: NavController
 ) {
     var selectedTab by remember { mutableStateOf("Teachers") }
 
@@ -95,7 +96,12 @@ fun ReviewScreen(
         LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
             if (selectedTab == "Teachers") {
                 items(teachers) { teacher ->
-                    TeacherItem(teacher = teacher, onTeacherClick = onTeacherClick)
+                    TeacherItem(
+                        teacher = teacher,
+                        onTeacherClick = {
+                            navController.navigate("teacher_details/${teacher.id}")
+                        }
+                    )
                 }
             } else {
                 items(courses) { course ->
@@ -248,8 +254,3 @@ fun TeacherItem(teacher: Teacher, onTeacherClick: (Teacher) -> Unit) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewReviewScreen() {
-    ReviewScreen()
-}

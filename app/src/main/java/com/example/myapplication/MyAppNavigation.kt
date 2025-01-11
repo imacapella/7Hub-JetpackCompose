@@ -38,6 +38,9 @@ import com.example.myapplication.Views.ClubsView.ClubsViewModel
 import com.example.myapplication.Views.ClubsView.ClubsScreen
 import com.example.myapplication.Views.ClubsView.ClubDetailScreen
 import com.example.myapplication.Views.ClubsView.ClubDetailViewModel
+import com.example.myapplication.Views.ReviewScreen.TeacherDetailsScreen
+import com.example.myapplication.Views.ReviewScreen.dummyTeacher1
+import com.example.myapplication.Views.ReviewScreen.dummyTeacher2
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Home : BottomNavItem("home", Icons.Default.Home, "Home")
@@ -197,7 +200,7 @@ fun MainScreen(loginViewModel: LoginViewModel) {
 
             composable("reviews") {
                 ReviewScreen(
-
+                    navController = navController
                 )
             }
 
@@ -233,6 +236,24 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                     viewModel = ClubDetailViewModel(),
                     onBackClick = { navController.navigateUp() },
                     onJoinClubClick = { /* Kulübe katılma işlemi */ }
+                )
+            }
+
+            composable(
+                "teacher_details/{teacherId}",
+                arguments = listOf(navArgument("teacherId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val teacherId = backStackEntry.arguments?.getInt("teacherId") ?: return@composable
+                val teacher = when (teacherId) {
+                    1 -> dummyTeacher1
+                    2 -> dummyTeacher2
+                    else -> return@composable
+                }
+                
+                TeacherDetailsScreen(
+                    teacher = teacher,
+                    onNavigateBack = { navController.navigateUp() },
+                    onRateTeacherClick = { /* Rate işlemi */ }
                 )
             }
         }
