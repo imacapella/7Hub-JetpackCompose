@@ -42,6 +42,7 @@ import com.example.myapplication.Views.ReviewScreen.TeacherDetailsScreen
 import com.example.myapplication.Views.ReviewScreen.dummyTeacher1
 import com.example.myapplication.Views.ReviewScreen.dummyTeacher2
 import com.example.myapplication.Views.AccountView.AccountScreen
+import com.example.myapplication.Views.HelpView.HelpScreen
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Home : BottomNavItem("home", Icons.Default.Home, "Home")
@@ -212,7 +213,8 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                         navController.navigate("login") {
                             popUpTo(0) { inclusive = true }
                         }
-                    }
+                    },
+                    navController = navController
                 )
             }
             composable("coursesReview") {
@@ -257,6 +259,12 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                     teacher = teacher,
                     onNavigateBack = { navController.navigateUp() },
                     onRateTeacherClick = { /* Rate işlemi */ }
+                )
+            }
+
+            composable("help") {
+                HelpScreen(
+                    onNavigateBack = { navController.navigateUp() }
                 )
             }
         }
