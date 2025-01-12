@@ -24,15 +24,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.R
 import com.example.myapplication.Utilities.Constants
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun AccountScreen(
@@ -54,7 +54,7 @@ fun AccountScreen(
             val circleCenterY = -circleRadius + 570F
 
             drawCircle(
-                color = Constants.hubBabyBlue,
+                color = Constants.hubBlue,
                 radius = circleRadius,
                 center = Offset(circleCenterX, circleCenterY)
             )
@@ -133,7 +133,7 @@ fun AccountScreen(
                 onClick = { navController.navigate("help") }
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(100.dp))  // Sadece 32.dp'lik sabit bir boşluk
 
             // Log Out Button
             Button(
@@ -142,16 +142,17 @@ fun AccountScreen(
                     onSignOut()
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
+                    .width(144.dp)
+                    .height(58.dp)
+                    .align(Alignment.CenterHorizontally),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF5BC658)
                 ),
-                shape = RoundedCornerShape(25.dp)
+                shape = RoundedCornerShape(10.dp)
             ) {
                 Text(
                     text = "Log Out",
-                    color = Color.White,
+                    color = Constants.hubWhite,
                     fontSize = 16.sp
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -205,12 +206,13 @@ fun MenuButton(
 @Composable
 fun AccountScreenPreview() {
     val previewNavController = rememberNavController()
+    val previewViewModel: AccountViewModel = viewModel()
     MaterialTheme {
         AccountScreen(
+            viewModel = previewViewModel,
             onNavigateBack = {},
             onSignOut = {},
             navController = previewNavController
         )
     }
 }
-
