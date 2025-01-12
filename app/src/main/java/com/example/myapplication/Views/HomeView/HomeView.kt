@@ -128,21 +128,28 @@ fun TitleCircle() {
 
 @Composable
 fun MyCoursesSection(courses: List<CourseModel>, navController: NavController) {
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(courses) { course ->
-            CourseCard(
-                courseCode = course.courseCode,
-                courseTitle = course.courseName,
-                instructorName = course.instructor,
-                onClick = {
-                    navController.navigate("course_detail/${course.courseCode}")
-                }
-            )
+    if (courses.isEmpty()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = Constants.hubGreen)
+        }
+    } else {
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(courses) { course ->
+                CourseCard(
+                    course = course,
+                    onClick = { navController.navigate("course_detail/${course.courseCode}") }
+                )
+            }
         }
     }
 }
@@ -248,9 +255,7 @@ fun CategoryCard(
 
 @Composable
 fun CourseCard(
-    courseCode: String,
-    courseTitle: String,
-    instructorName: String,
+    course: CourseModel,
     onClick: () -> Unit
 ) {
     Card(
@@ -283,7 +288,7 @@ fun CourseCard(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = courseCode,
+                    text = course.courseCode,
                     fontSize = 55.sp,
                     color = Color.White,
                     fontWeight = FontWeight.Bold
@@ -295,13 +300,13 @@ fun CourseCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = courseTitle,
+                    text = course.courseName,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF342E37)
                 )
                 Text(
-                    text = instructorName,
+                    text = course.instructor,
                     fontSize = 14.sp,
                     color = Color(0xFF718A39)
                 )
