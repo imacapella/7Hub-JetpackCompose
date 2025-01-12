@@ -31,12 +31,15 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.R
 import com.example.myapplication.Utilities.Constants
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun AccountScreen(
     viewModel: AccountViewModel = viewModel(),
     onNavigateBack: () -> Unit,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -127,7 +130,7 @@ fun AccountScreen(
             MenuButton(
                 text = "Help",
                 icon = Icons.Default.Help,
-                onClick = { /* Navigate to Help */ }
+                onClick = { navController.navigate("help") }
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -201,10 +204,13 @@ fun MenuButton(
 @Preview(showBackground = true)
 @Composable
 fun AccountScreenPreview() {
-    AccountScreen(
-        viewModel = AccountViewModel(),
-        onNavigateBack = {},
-        onSignOut = {}
-    )
+    val previewNavController = rememberNavController()
+    MaterialTheme {
+        AccountScreen(
+            onNavigateBack = {},
+            onSignOut = {},
+            navController = previewNavController
+        )
+    }
 }
 
