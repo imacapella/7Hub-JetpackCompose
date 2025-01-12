@@ -18,6 +18,7 @@ data class Teacher(
     val reviews: List<Review> = emptyList()  // Öğretmene ait yorumların listesi
 
 )
+
 data class Course(
     val id: Int,
     val code: String,         // Dersin kodu (örneğin: VCD 471)

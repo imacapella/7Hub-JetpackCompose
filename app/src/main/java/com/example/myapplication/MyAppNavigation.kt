@@ -167,6 +167,7 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                 val courseCode = backStackEntry.arguments?.getString("courseCode") ?: return@composable
                 CourseDetailScreen(
                     viewModel = CourseDetailViewModel(),
+                    courseCode = courseCode,
                     onBackClick = { navController.navigateUp() },
                     onChatClick = { /* Chat işlevi eklenecek */ }
                 )

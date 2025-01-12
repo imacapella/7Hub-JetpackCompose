@@ -29,8 +29,8 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    private fun isValidEmail(email: String): Boolean {
-        return email.endsWith("@std.yeditepe.edu.tr")
+    private fun isValidYeditepeEmail(email: String): Boolean {
+        return email.endsWith("@yeditepe.edu.tr")
     }
 
     private fun extractNameFromEmail(email: String): Pair<String, String>? {
@@ -48,8 +48,8 @@ class LoginViewModel : ViewModel() {
             return
         }
 
-        if (!isValidEmail(email)) {
-            _authState.value = AuthState.Error("Only @std.yeditepe.edu.tr email addresses are allowed")
+        if (!isValidYeditepeEmail(email)) {
+            _authState.value = AuthState.Error("Only @yeditepe.edu.tr email addresses are allowed")
             return
         }
 
@@ -107,8 +107,8 @@ class LoginViewModel : ViewModel() {
             return
         }
 
-        if (!isValidEmail(email)) {
-            _authState.value = AuthState.Error("Only @std.yeditepe.edu.tr email addresses are allowed")
+        if (!isValidYeditepeEmail(email)) {
+            _authState.value = AuthState.Error("Only @yeditepe.edu.tr email addresses are allowed")
             return
         }
 
