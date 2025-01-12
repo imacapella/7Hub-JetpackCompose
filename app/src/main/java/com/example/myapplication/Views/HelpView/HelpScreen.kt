@@ -2,6 +2,7 @@ package com.example.myapplication.Views.HelpView
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -16,6 +17,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.Utilities.Constants
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.Surface
+import androidx.compose.ui.draw.shadow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +40,7 @@ fun HelpScreen(
             val circleCenterY = -circleRadius + 570F
 
             drawCircle(
-                color = Constants.hubBabyBlue,
+                color = Constants.hubBlue,
                 radius = circleRadius,
                 center = Offset(circleCenterX, circleCenterY)
             )
@@ -47,10 +51,10 @@ fun HelpScreen(
                 .fillMaxSize()
                 .padding(24.dp)
         ) {
-            // Back Button and Title
+            // Back Button Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onNavigateBack) {
@@ -60,60 +64,108 @@ fun HelpScreen(
                         tint = Color.White
                     )
                 }
+            }
+
+            // Title Row - Yeni ayrı bir Row
+            Spacer(modifier = Modifier.height(80.dp))  // Back button ile title arası boşluk
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Text(
                     text = "Help",
                     color = Color.White,
                     fontSize = 25.sp,
                     fontWeight = FontWeight.SemiBold
                 )
-                // Boş box ile dengeleme
-                Box(modifier = Modifier.width(48.dp))
             }
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(90.dp))
 
-            Text(
-                text = "What do you need help with?",
-                fontSize = 16.sp,
-                color = Color.Gray,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            TextField(
-                value = helpText,
-                onValueChange = { viewModel.updateHelpText(it) },
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.White,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent
-                ),
-                shape = RoundedCornerShape(8.dp)
-            )
+                    .width(371.dp)
+                    .height(430.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(horizontal = 16.dp)
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = RoundedCornerShape(16.dp),
+                        spotColor = Color.Gray.copy(alpha = 0.3f)
+                    )
+                    .background(Color.White, shape = RoundedCornerShape(16.dp))
+                    .padding(16.dp)
+            ) {
+                Column {
+                    Text(
+                        text = "What do you need help with?",
+                        fontSize = 16.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    TextField(
+                        value = helpText,
+                        onValueChange = { viewModel.updateHelpText(it) },
+                        modifier = Modifier
+                            .width(325.dp)
+                            .height(212.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .border(
+                                width = 1.dp,
+                                color = Color.Gray.copy(alpha = 0.5f),
+                                shape = RoundedCornerShape(8.dp)
+                            ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = Color.White,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(80.dp))  // Butonu aşağıya almak için Spacer ekledik
+
+                    Button(
+                        onClick = {
+                            viewModel.submitHelp()
+                            onNavigateBack()
+                        },
+                        modifier = Modifier
+                            .width(116.dp)
+                            .height(46.dp)
+                            .align(Alignment.CenterHorizontally),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF5BC658)
+                        ),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text(
+                            text = "Submit",
+                            color = Color.White,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.weight(1f))
+        }
+    }
+}
 
-            Button(
-                onClick = {
-                    viewModel.submitHelp()
-                    onNavigateBack()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF5BC658)
-                ),
-                shape = RoundedCornerShape(25.dp)
-            ) {
-                Text(
-                    text = "Submit",
-                    color = Color.White,
-                    fontSize = 16.sp
-                )
-            }
+@Preview(showBackground = true)
+@Composable
+fun HelpScreenPreview() {
+    MaterialTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            HelpScreen(
+                viewModel = HelpViewModel(),
+                onNavigateBack = {}
+            )
         }
     }
 } 
