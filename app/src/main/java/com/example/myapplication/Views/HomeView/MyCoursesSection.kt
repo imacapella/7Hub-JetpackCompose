@@ -14,6 +14,7 @@ import com.example.myapplication.DataLayer.Models.CourseModel
 import com.example.myapplication.Utilities.Constants
 import com.example.myapplication.Views.CourseView.CourseCard
 
+
 @Composable
 fun MyCoursesSection(
     courses: List<CourseModel>,

@@ -1,14 +1,14 @@
 package com.example.myapplication.Views.ReviewScreen
 
 data class Review(
-    val id: Int,                // Yorumun benzersiz ID'si
-    val reviewerName: String,   // Yorumu yapan kişinin adı
-    val content: String,        // Yorumun içeriği
+    val id: Int,
+    val author: String,
+    val content: String,
     val rating: Int,
-    val teacherId: Int          // Yorumun ait olduğu öğretmenin ID'si
-
-// 1-5 arasında bir puan
+    val courseId: Int? = null, // Ders için gerekli
+    val teacherId: Int? = null // Öğretmen için gerekli
 )
+
 
 data class Teacher(
     val id: Int,
@@ -24,6 +24,8 @@ data class Course(
     val code: String,         // Dersin kodu (örneğin: VCD 471)
     val name: String,         // Dersin adı
     val instructor: String,   // Dersi veren öğretmen
-    val rating: Float         // 1-5 arasında bir puan
-)
+    val rating: Float,
+    val reviews: List<Review> = emptyList()
 
+// 1-5 arasında bir puan
+)

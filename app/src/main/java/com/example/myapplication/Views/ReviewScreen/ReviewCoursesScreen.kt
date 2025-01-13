@@ -16,16 +16,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import com.example.myapplication.R
 
 @Composable
 fun ReviewCoursesScreen(
+    navController: NavController, // NavController'ı parametre olarak alıyoruz
     courses: List<Course> = listOf(
         Course(id = 1, code = "VCD 471", name = "Interactive Design Studio", instructor = "Merve Çaşkurlu", rating = 5.0f),
         Course(id = 2, code = "VCD 592", name = "Internship", instructor = "Murat Yılmaz", rating = 2.8f)
     ),
-    onNavigateBack: () -> Unit = {},
-    onCourseClick: (Course) -> Unit = {}
+    onNavigateBack: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -68,11 +69,15 @@ fun ReviewCoursesScreen(
                 .padding(horizontal = 16.dp)
         ) {
             items(courses) { course ->
-                CourseItem(course = course, onCourseClick = onCourseClick)
+                CourseItem(
+                    course = course,
+                    onCourseClick = { navController.navigate("course_details/${course.id}") }  // Burada doğru şekilde lambda işlevi geçiliyor
+                )
             }
         }
     }
 }
+
 
 @Composable
 fun CourseItem(
@@ -180,7 +185,7 @@ fun CourseItem(
             }
 
             IconButton(
-                onClick = { onCourseClick(course) },
+                onClick = { onCourseClick(course) },  // Buradaki işlevi tetikleme
                 modifier = Modifier
                     .size(40.dp)
                     .align(Alignment.BottomEnd) // Box içinde sağ alt köşeye hizalama
@@ -195,11 +200,4 @@ fun CourseItem(
             }
         }
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewReviewCoursesScreen() {
-    ReviewCoursesScreen()
 }

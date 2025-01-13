@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.R
+import com.example.myapplication.Utilities.ClubUtils
 import com.example.myapplication.Utilities.Constants
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,6 +96,40 @@ fun ClubsScreen(
                     onClick = { onClubClick(club) },
                     showArrow = selectedTab == ClubTab.MY_CLUBS
                 )
+        // Content
+        Box(modifier = Modifier.fillMaxSize()) {
+            when {
+                isLoading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Constants.hubGreen
+                    )
+                }
+                error != null -> {
+                    Text(
+                        text = error ?: "",
+                        color = Color.Red,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp)
+                    )
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(clubs) { club ->
+                            ClubCard(
+                                club = club,
+                                onClick = { onClubClick(club) },
+                                showArrow = selectedTab == ClubTab.MY_CLUBS
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -162,7 +197,7 @@ fun ClubCard(
                 color = Constants.hubBabyBlue
             ) {
                 Icon(
-                    painter = painterResource(id = getClubIcon(club.clubIcon)),
+                    painter = painterResource(id = ClubUtils.getClubIcon(club.clubIcon)),
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier
@@ -195,15 +230,6 @@ fun ClubCard(
                 )
             }
         }
-    }
-}
-
-fun getClubIcon(iconName: String): Int {
-    return when (iconName.lowercase()) {
-        "cinema" -> R.drawable.ic_cinema
-        "theatre" -> R.drawable.ic_theatre
-        "music" -> R.drawable.ic_music
-        else -> R.drawable.ic_default_club
     }
 }
 

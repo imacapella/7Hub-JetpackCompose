@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.Utilities.Constants
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.myapplication.Utilities.ClubUtils
 
 @Composable
 fun ClubDetailScreen(
@@ -76,7 +77,7 @@ fun ClubDetailScreen(
                 color = Constants.hubGreen
             ) {
                 Icon(
-                    painter = painterResource(id = getClubIcon(uiState.clubIcon)),
+                    painter = painterResource(id = ClubUtils.getClubIcon(uiState.clubIcon)),
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier
@@ -114,31 +115,44 @@ fun ClubDetailScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Button(
-                    onClick = onJoinClubClick,
+                    onClick = {
+                        viewModel.joinClubChat(
+                            onSuccess = onJoinClubClick,
+                            onError = onJoinError
+                        )
+                    },
                     modifier = Modifier
                         .width(143.dp)
                         .height(49.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Constants.hubGreen
                     ),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !uiState.isJoining
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Join Club",
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleMedium
+                    if (uiState.isJoining) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = Color.White
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
+                    } else {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Join Club",
+                                color = Color.White,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }
                     }
                 }
             }
