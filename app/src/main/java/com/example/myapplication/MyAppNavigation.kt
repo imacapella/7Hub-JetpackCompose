@@ -192,7 +192,9 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                 CourseDetailScreen(
                     viewModel = CourseDetailViewModel(),
                     courseCode = courseCode,
-                    onBackClick = { navController.navigateUp() },
+                    onBackClick = { 
+                        navController.popBackStack()
+                    },
                     onChatClick = { 
                         // TODO: Navigate to chat screen when implemented
                     }
