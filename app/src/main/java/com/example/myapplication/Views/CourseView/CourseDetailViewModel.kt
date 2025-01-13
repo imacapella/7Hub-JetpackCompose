@@ -3,10 +3,7 @@
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FieldValue
+import com.example.myapplication.DataLayer.Models.CourseModel
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,22 +12,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 data class CourseDetailUiState(
-    val courseCode: String = "",
-    val courseTitle: String = "",
-    val courseDescription: String? = null,
-    val instructorName: String? = null,
-    val instructorImageUrl: String? = null,
-    val rating: Int = 0,
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val credits: Int? = null,
-    val semester: String? = null,
+    val isLoading: Boolean = true,
+    val identifier: String = "",
+    val courseName: String = "",
+    val courseDesc: String = "",
+    val instructor: String = "",
+    val courseCredit: Int = 0,
+    val courseRating: Int = 0,
+    val semester: String = "",
     val prerequisites: List<String> = emptyList(),
-    val syllabus: String? = null,
+    val syllabus: String = "",
     val announcements: List<String> = emptyList(),
-    val userRole: String = "student",
-    val isUpdating: Boolean = false,
-    val updateMessage: String? = null
+    val instructorId: String = "",
+    val instructorImageUrl: String = ""
 )
 
 class CourseDetailViewModel : ViewModel() {
@@ -38,275 +32,49 @@ class CourseDetailViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(CourseDetailUiState())
     val uiState: StateFlow<CourseDetailUiState> = _uiState.asStateFlow()
 
-    fun loadCourseDetails(courseCode: String) {
+    fun loadCourseDetails(courseId: String) {
         viewModelScope.launch {
-            Log.d("CourseDetailViewModel", "Starting to load course details for code: $courseCode")
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-
             try {
-                Log.d("CourseDetailViewModel", "Fetching course from Firestore...")
-                val courseTask = firestore.collection("courses")
-                    .whereEqualTo("courseCode", courseCode)
+                Log.d("CourseDetailViewModel", "Loading course details for ID: $courseId")
+                _uiState.value = _uiState.value.copy(isLoading = true)
+
+                val document = firestore.collection("courses")
+                    .document(courseId)
                     .get()
                     .await()
 
-                if (courseTask.isEmpty) {
-                    Log.w("CourseDetailViewModel", "No course found with code: $courseCode")
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = "Course not found"
-                    )
-                    return@launch
-                }
-
-                val document = courseTask.documents.first()
-                Log.d("CourseDetailViewModel", "Course document found. ID: ${document.id}")
-                
-                // Log raw data
-                Log.d("CourseDetailViewModel", "Raw course data: " +
-                    "\nCode: ${document.getString("courseCode")}" +
-                    "\nName: ${document.getString("courseName")}" +
-                    "\nDesc: ${document.getString("courseDesc")}" +
-                    "\nInstructor: ${document.getString("instructor")}" +
-                    "\nCredits: ${document.getLong("courseCredit")}")
-                
-                // Kurs bilgilerini state'e kaydet
-                val updatedState = CourseDetailUiState(
-                    courseCode = document.getString("courseCode") ?: "",
-                    courseTitle = document.getString("courseName") ?: "",
-                    courseDescription = document.getString("courseDesc") 
-                        ?: document.getString("description"),
-                    instructorName = document.getString("instructor"),
-                    instructorImageUrl = document.getString("instructorImageUrl"),
-                    rating = document.getLong("courseRating")?.toInt() ?: 0,
-                    credits = document.getLong("courseCredit")?.toInt(),
-                    semester = document.getString("semester"),
-                    prerequisites = (document.get("prerequisites") as? List<String>) ?: emptyList(),
-                    syllabus = document.getString("syllabus"),
-                    announcements = (document.get("announcements") as? List<String>) ?: emptyList(),
-                    isLoading = false
-                )
-
-                Log.d("CourseDetailViewModel", "Updated state created: " +
-                    "\nTitle: ${updatedState.courseTitle}" +
-                    "\nDesc: ${updatedState.courseDescription}" +
-                    "\nInstructor: ${updatedState.instructorName}" +
-                    "\nCredits: ${updatedState.credits}")
-
-                _uiState.value = updatedState
-                Log.d("CourseDetailViewModel", "State updated with course details")
-
-                // Kullanıcı rolünü kontrol et
-                val currentUser = FirebaseAuth.getInstance().currentUser
-                if (currentUser != null) {
-                    Log.d("CourseDetailViewModel", "Current user found. ID: ${currentUser.uid}")
+                if (document != null && document.exists()) {
+                    Log.d("CourseDetailViewModel", "Course document found: ${document.data}")
                     try {
-                        val userDoc = firestore.collection("users")
-                            .document(currentUser.uid)
-                            .get()
-                            .await()
-                        
-                        val userRole = userDoc.getString("role") ?: "student"
-                        Log.d("CourseDetailViewModel", "User role loaded: $userRole")
-                        _uiState.value = _uiState.value.copy(userRole = userRole)
-                        Log.d("CourseDetailViewModel", "State updated with user role")
+                        val newState = _uiState.value.copy(
+                            isLoading = false,
+                            identifier = document.id,
+                            courseName = document.getString("name") ?: "",
+                            courseDesc = document.getString("description") ?: "",
+                            instructor = document.getString("instructor") ?: "",
+                            courseCredit = document.getLong("courseCredit")?.toInt() ?: 0,
+                            courseRating = document.getLong("courseRating")?.toInt() ?: 0,
+                            semester = document.getString("semester") ?: "",
+                            prerequisites = document.get("prerequisites") as? List<String> ?: emptyList(),
+                            syllabus = document.getString("syllabus") ?: "",
+                            announcements = document.get("announcements") as? List<String> ?: emptyList(),
+                            instructorId = document.getString("instructorId") ?: "",
+                            instructorImageUrl = document.getString("instructorImageUrl") ?: ""
+                        )
+                        _uiState.value = newState
+                        Log.d("CourseDetailViewModel", "Updated UI state: $newState")
                     } catch (e: Exception) {
-                        Log.e("CourseDetailViewModel", "Error loading user role", e)
-                        _uiState.value = _uiState.value.copy(userRole = "student")
+                        Log.e("CourseDetailViewModel", "Error parsing course details", e)
+                        _uiState.value = _uiState.value.copy(isLoading = false)
                     }
                 } else {
-                    Log.w("CourseDetailViewModel", "No current user found")
-                }
-
-                // Load instructor details if available
-                val instructorId = document.getString("instructorId")
-                if (instructorId != null) {
-                    Log.d("CourseDetailViewModel", "Loading instructor details for ID: $instructorId")
-                    try {
-                        val instructorDoc = firestore.collection("users")
-                            .document(instructorId)
-                            .get()
-                            .await()
-
-                        if (instructorDoc.exists()) {
-                            Log.d("CourseDetailViewModel", "Instructor document found: " +
-                                "\nName: ${instructorDoc.getString("name")}" +
-                                "\nPhoto: ${instructorDoc.getString("photoUrl")}")
-                            
-                            val previousState = _uiState.value
-                            _uiState.value = _uiState.value.copy(
-                                instructorName = instructorDoc.getString("name") ?: _uiState.value.instructorName,
-                                instructorImageUrl = instructorDoc.getString("photoUrl") ?: _uiState.value.instructorImageUrl
-                            )
-                            Log.d("CourseDetailViewModel", "State updated with instructor details. " +
-                                "Previous name: ${previousState.instructorName}, " +
-                                "New name: ${_uiState.value.instructorName}")
-                        } else {
-                            Log.w("CourseDetailViewModel", "No instructor document found for ID: $instructorId")
-                        }
-                    } catch (e: Exception) {
-                        Log.e("CourseDetailViewModel", "Error loading instructor details", e)
-                    }
-                } else {
-                    Log.w("CourseDetailViewModel", "No instructorId found in course document")
+                    Log.e("CourseDetailViewModel", "Course document not found for ID: $courseId")
+                    _uiState.value = _uiState.value.copy(isLoading = false)
                 }
             } catch (e: Exception) {
                 Log.e("CourseDetailViewModel", "Error loading course details", e)
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = e.message ?: "Error loading course details"
-                )
-            } finally {
-                Log.d("CourseDetailViewModel", "Final state: " +
-                    "\nTitle: ${_uiState.value.courseTitle}" +
-                    "\nDesc: ${_uiState.value.courseDescription}" +
-                    "\nInstructor: ${_uiState.value.instructorName}" +
-                    "\nCredits: ${_uiState.value.credits}" +
-                    "\nLoading: ${_uiState.value.isLoading}" +
-                    "\nError: ${_uiState.value.error}")
+                _uiState.value = _uiState.value.copy(isLoading = false)
             }
         }
-    }
-
-    private fun loadInstructorDetails(instructorId: String) {
-        firestore.collection("users")
-            .document(instructorId)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    // Mevcut state'i koru, sadece instructor bilgilerini güncelle
-                    _uiState.value = _uiState.value.copy(
-                        instructorName = document.getString("name") ?: _uiState.value.instructorName,
-                        instructorImageUrl = document.getString("photoUrl") ?: _uiState.value.instructorImageUrl
-                    )
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("CourseDetailViewModel", "Error loading instructor details", e)
-            }
-    }
-
-    fun updateInstructorData() {
-        _uiState.value = _uiState.value.copy(isUpdating = true, updateMessage = "Veritabanı güncelleniyor...")
-        
-        // Instructor koleksiyonunu oluştur
-        val batch = firestore.batch()
-        
-        // Önce öğretmenleri bul
-        firestore.collection("users")
-            .whereEqualTo("role", "instructor")
-            .get()
-            .addOnSuccessListener { instructors ->
-                instructors.forEach { instructor ->
-                    // InstructorInfo koleksiyonuna ekle
-                    val instructorInfoRef = firestore.collection("instructorInfo").document(instructor.id)
-                    val instructorInfo = mapOf(
-                        "userId" to instructor.id,
-                        "name" to (instructor.getString("name") ?: ""),
-                        "surname" to (instructor.getString("surname") ?: ""),
-                        "title" to (instructor.getString("title") ?: "Dr."),
-                        "department" to (instructor.getString("department") ?: ""),
-                        "email" to (instructor.getString("email") ?: ""),
-                        "officeHours" to listOf(
-                            mapOf(
-                                "day" to "Monday",
-                                "startTime" to "10:00",
-                                "endTime" to "12:00"
-                            ),
-                            mapOf(
-                                "day" to "Wednesday",
-                                "startTime" to "14:00",
-                                "endTime" to "16:00"
-                            )
-                        ),
-                        "officeLocation" to "B-Block Room 205",
-                        "researchInterests" to listOf(
-                            "Artificial Intelligence",
-                            "Machine Learning",
-                            "Data Science"
-                        ),
-                        "publications" to listOf(
-                            mapOf(
-                                "title" to "Sample Publication 1",
-                                "year" to 2023,
-                                "journal" to "International Journal of Computer Science"
-                            )
-                        ),
-                        "courses" to listOf(),
-                        "ratings" to mapOf(
-                            "teaching" to 0.0,
-                            "communication" to 0.0,
-                            "expertise" to 0.0,
-                            "overall" to 0.0,
-                            "totalRatings" to 0
-                        ),
-                        "updatedAt" to FieldValue.serverTimestamp()
-                    )
-                    
-                    batch.set(instructorInfoRef, instructorInfo)
-                }
-
-                // Dersleri güncelle
-                firestore.collection("courses")
-                    .get()
-                    .addOnSuccessListener { courses ->
-                        courses.forEach { course ->
-                            val courseRef = firestore.collection("courses").document(course.id)
-                            val instructorId = course.getString("instructorId")
-                            
-                            // Kredi ekle
-                            val credits = listOf(3, 6, 9, 12).random()
-                            batch.update(courseRef, "courseCredit", credits)
-                            
-                            // InstructorHistory ekle
-                            if (instructorId != null) {
-                                val instructorHistory = listOf(
-                                    mapOf(
-                                        "instructorId" to instructorId,
-                                        "semester" to (course.getString("semester") ?: "FALL_2024"),
-                                        "ratings" to mapOf(
-                                            "teaching" to 0.0,
-                                            "communication" to 0.0,
-                                            "expertise" to 0.0,
-                                            "overall" to 0.0,
-                                            "totalRatings" to 0
-                                        )
-                                    )
-                                )
-                                batch.update(courseRef, "instructorHistory", instructorHistory)
-                            }
-                        }
-
-                        // Tüm değişiklikleri commit et
-                        batch.commit()
-                            .addOnSuccessListener {
-                                _uiState.value = _uiState.value.copy(
-                                    isUpdating = false,
-                                    updateMessage = "Veritabanı başarıyla güncellendi!\n" +
-                                            "- Instructor bilgileri eklendi\n" +
-                                            "- Ders kredileri güncellendi\n" +
-                                            "- Instructor geçmişi eklendi"
-                                )
-                            }
-                            .addOnFailureListener { e ->
-                                _uiState.value = _uiState.value.copy(
-                                    isUpdating = false,
-                                    updateMessage = "Güncelleme başarısız: ${e.message}"
-                                )
-                            }
-                    }
-                    .addOnFailureListener { e ->
-                        _uiState.value = _uiState.value.copy(
-                            isUpdating = false,
-                            updateMessage = "Dersler alınırken hata oluştu: ${e.message}"
-                        )
-                    }
-            }
-            .addOnFailureListener { e ->
-                _uiState.value = _uiState.value.copy(
-                    isUpdating = false,
-                    updateMessage = "Öğretmenler alınırken hata oluştu: ${e.message}"
-                )
-            }
     }
 }

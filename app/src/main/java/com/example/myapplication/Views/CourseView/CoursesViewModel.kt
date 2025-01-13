@@ -12,102 +12,118 @@ import kotlinx.coroutines.flow.asStateFlow
 class CoursesViewModel : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
-    private val _courses = MutableStateFlow<List<CourseModel>>(emptyList())
-    val courses: StateFlow<List<CourseModel>> = _courses.asStateFlow()
 
     private val _selectedTab = MutableStateFlow(CourseTab.MY_COURSES)
     val selectedTab: StateFlow<CourseTab> = _selectedTab.asStateFlow()
 
-    private var allCoursesList: List<CourseModel> = emptyList()
+    private val _courses = MutableStateFlow<List<CourseModel>>(emptyList())
+    val courses: StateFlow<List<CourseModel>> = _courses.asStateFlow()
 
     init {
         loadUserCourses()
     }
 
     private fun loadExistingCourses() {
-        if (allCoursesList.isNotEmpty()) {
-            _courses.value = allCoursesList
-            return
-        }
-
+        Log.d("CoursesViewModel", "Loading existing courses")
         firestore.collection("courses")
             .get()
             .addOnSuccessListener { documents ->
+                Log.d("CoursesViewModel", "Found ${documents.size()} courses")
                 val coursesList = documents.mapNotNull { doc ->
-                    CourseModel(
-                        courseId = doc.id,
-                        courseCode = doc.getString("courseCode") ?: return@mapNotNull null,
-                        courseName = doc.getString("courseName") ?: return@mapNotNull null,
-                        description = doc.getString("description") ?: "",
-                        instructor = doc.getString("instructor") ?: return@mapNotNull null
-                    )
+                    try {
+                        CourseModel(
+                            Identifier = doc.id,
+                            courseName = doc.getString("name") ?: return@mapNotNull null,
+                            courseDesc = doc.getString("description"),
+                            instructor = doc.getString("instructor"),
+                            courseCredit = doc.getLong("courseCredit")?.toInt(),
+                            courseRating = doc.getLong("courseRating")?.toInt() ?: 0,
+                            semester = doc.getString("semester"),
+                            prerequisites = doc.get("prerequisites") as? List<String> ?: emptyList(),
+                            syllabus = doc.getString("syllabus"),
+                            announcements = doc.get("announcements") as? List<String> ?: emptyList(),
+                            instructorId = doc.getString("instructorId"),
+                            instructorRef = doc.getDocumentReference("instructorRef")?.path,
+                            instructorImageUrl = doc.getString("instructorImageUrl")
+                        ).also {
+                            Log.d("CoursesViewModel", "Successfully loaded course: ${it.courseName}")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("CoursesViewModel", "Error parsing course: ${doc.id}", e)
+                        null
+                    }
                 }
-                allCoursesList = coursesList
                 _courses.value = coursesList
                 Log.d("CoursesViewModel", "Loaded ${coursesList.size} courses")
             }
             .addOnFailureListener { e ->
-                Log.e("CoursesViewModel", "Error loading all courses", e)
+                Log.e("CoursesViewModel", "Error loading courses", e)
+                _courses.value = emptyList()
+            }
+    }
+
+    private fun loadUserCourses() {
+        val userId = auth.currentUser?.uid ?: return
+        Log.d("CoursesViewModel", "Loading user courses for: $userId")
+
+        firestore.collection("users")
+            .document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val userCourses = document.get("courses") as? List<String> ?: emptyList()
+                    Log.d("CoursesViewModel", "User courses: $userCourses")
+
+                    firestore.collection("courses")
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            val coursesList = documents.mapNotNull { doc ->
+                                if (doc.id in userCourses) {
+                                    try {
+                                        CourseModel(
+                                            Identifier = doc.id,
+                                            courseName = doc.getString("name") ?: return@mapNotNull null,
+                                            courseDesc = doc.getString("description"),
+                                            instructor = doc.getString("instructor"),
+                                            courseCredit = doc.getLong("courseCredit")?.toInt(),
+                                            courseRating = doc.getLong("courseRating")?.toInt() ?: 0,
+                                            semester = doc.getString("semester"),
+                                            prerequisites = doc.get("prerequisites") as? List<String> ?: emptyList(),
+                                            syllabus = doc.getString("syllabus"),
+                                            announcements = doc.get("announcements") as? List<String> ?: emptyList(),
+                                            instructorId = doc.getString("instructorId"),
+                                            instructorRef = doc.getDocumentReference("instructorRef")?.path,
+                                            instructorImageUrl = doc.getString("instructorImageUrl")
+                                        ).also {
+                                            Log.d("CoursesViewModel", "Successfully loaded user course: ${it.courseName}")
+                                        }
+                                    } catch (e: Exception) {
+                                        Log.e("CoursesViewModel", "Error parsing course: ${doc.id}", e)
+                                        null
+                                    }
+                                } else null
+                            }
+                            _courses.value = coursesList
+                            Log.d("CoursesViewModel", "Loaded ${coursesList.size} user courses")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("CoursesViewModel", "Error loading user courses", e)
+                            _courses.value = emptyList()
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("CoursesViewModel", "Error loading user document", e)
                 _courses.value = emptyList()
             }
     }
 
     fun onTabSelected(tab: CourseTab) {
-        if (_selectedTab.value == tab) return // Eğer aynı tab'a tıklandıysa işlem yapma
-        
         _selectedTab.value = tab
         when (tab) {
             CourseTab.ALL_COURSES -> loadExistingCourses()
             CourseTab.MY_COURSES -> loadUserCourses()
         }
-    }
-
-    private fun loadUserCourses() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            Log.d("CoursesViewModel", "No user logged in")
-            _courses.value = emptyList()
-            return
-        }
-
-        firestore.collection("users").document(currentUser.uid)
-            .get()
-            .addOnSuccessListener { userDoc ->
-                val userCourses = userDoc.get("courses") as? List<String> ?: emptyList()
-                Log.d("CoursesViewModel", "User courses: $userCourses")
-
-                if (userCourses.isEmpty()) {
-                    _courses.value = emptyList()
-                    return@addOnSuccessListener
-                }
-
-                firestore.collection("courses")
-                    .get()
-                    .addOnSuccessListener { documents ->
-                        val coursesList = documents.mapNotNull { doc ->
-                            val courseCode = doc.getString("courseCode")
-                            if (courseCode in userCourses) {
-                                CourseModel(
-                                    courseId = doc.id,
-                                    courseCode = courseCode!!,
-                                    courseName = doc.getString("courseName") ?: return@mapNotNull null,
-                                    description = doc.getString("description") ?: "",
-                                    instructor = doc.getString("instructor") ?: return@mapNotNull null
-                                )
-                            } else null
-                        }
-                        _courses.value = coursesList
-                        Log.d("CoursesViewModel", "Loaded ${coursesList.size} user courses")
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("CoursesViewModel", "Error loading courses", e)
-                        _courses.value = emptyList()
-                    }
-            }
-            .addOnFailureListener { e ->
-                Log.e("CoursesViewModel", "Error loading user data", e)
-                _courses.value = emptyList()
-            }
     }
 }
 
@@ -115,4 +131,3 @@ enum class CourseTab {
     MY_COURSES,
     ALL_COURSES
 }
-

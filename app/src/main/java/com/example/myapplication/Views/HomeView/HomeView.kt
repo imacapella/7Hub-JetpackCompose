@@ -36,6 +36,7 @@ import com.example.myapplication.Views.LoginView.AuthState
 import com.example.myapplication.Views.LoginView.LoginViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.Views.HomeView.HomeViewModel
+import com.example.myapplication.Views.HomeView.MyCoursesSection
 
 @Composable
 fun HomeView(
@@ -126,33 +127,7 @@ fun TitleCircle() {
     }
 }
 
-@Composable
-fun MyCoursesSection(courses: List<CourseModel>, navController: NavController) {
-    if (courses.isEmpty()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(color = Constants.hubGreen)
-        }
-    } else {
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(courses) { course ->
-                CourseCard(
-                    course = course,
-                    onClick = { navController.navigate("course_detail/${course.courseCode}") }
-                )
-            }
-        }
-    }
-}
+
 
 @Composable
 fun MyCoursesWithNavButton(navController: NavController) {
@@ -285,7 +260,7 @@ fun CourseCard(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = course.courseCode,
+                    text = course.Identifier,
                     fontSize = 55.sp,
                     color = Color.White,
                     fontWeight = FontWeight.Bold
@@ -302,11 +277,13 @@ fun CourseCard(
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF342E37)
                 )
-                Text(
-                    text = course.instructor,
-                    fontSize = 14.sp,
-                    color = Color(0xFF718A39)
-                )
+                course.instructor?.let {
+                    Text(
+                        text = it,
+                        fontSize = 14.sp,
+                        color = Color(0xFF718A39)
+                    )
+                }
             }
         }
     }
