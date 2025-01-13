@@ -1,0 +1,262 @@
+[33mcommit 6ce5d9c30ad00a5ad2035cd40f32d0559de72a39[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mZehra[m[33m)[m
+Merge: eb644ce 346512e
+Author: Zehra Ergöktaş <zehranurergoktas23@gmail.com>
+Date:   Mon Jan 13 03:10:42 2025 +0300
+
+    Resolved merge conflict in ReviewScreen.kt
+
+[33mcommit eb644ce1394878be2657bb8df524cc37ff32b2bb[m[33m ([m[1;31morigin/Zehra[m[33m)[m
+Author: Zehra Ergöktaş <zehranurergoktas23@gmail.com>
+Date:   Mon Jan 13 03:02:31 2025 +0300
+
+    TeachersDetailScreenFinished
+
+[33mcommit 346512e1687625028e9e7d9b61070f81f470d3f1[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: f4ba8d7 a0f8436
+Author: Gürkan Karadaş <101065086+imacapella@users.noreply.github.com>
+Date:   Mon Jan 13 01:43:11 2025 +0300
+
+    Merge pull request #57 from 7Hub-ACM431/Gürkan
+    
+    Courses Details Data Integrated
+
+[33mcommit a0f8436566a7fb139d596dd9a1187fd0765c4ede[m
+Author: imacapella <gurkankaradas42@gmail.com>
+Date:   Mon Jan 13 01:41:52 2025 +0300
+
+    Courses Details Data Integrated
+
+[33mcommit f4ba8d777005508d43c374e15a6e40e8a89d9fc2[m
+Merge: 765d195 8e3df4c
+Author: Mert Yılmazer <134609539+Vladexxs@users.noreply.github.com>
+Date:   Mon Jan 13 00:32:18 2025 +0300
+
+    Merge pull request #56 from 7Hub-ACM431/Mert
+    
+    small changes for UI
+
+[33mcommit 8e3df4c1abc5646825618cddd710b49ce7729c23[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Mon Jan 13 00:31:45 2025 +0300
+
+    small changes for UI
+
+[33mcommit 765d1959310c26760a679f5a8633dd6f3ce9e377[m
+Merge: 62f36f4 28fc526
+Author: Mert Yılmazer <134609539+Vladexxs@users.noreply.github.com>
+Date:   Sun Jan 12 21:22:04 2025 +0300
+
+    Merge pull request #55 from 7Hub-ACM431/Mert
+    
+    improved: AccountScreen UI
+
+[33mcommit 28fc5267a63dede4f6537f204dbe42900772277d[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Sun Jan 12 21:20:35 2025 +0300
+
+    improved: AccountScreen UI
+
+[33mcommit 62f36f43401528945de6d20a8284699c2e73cb1c[m
+Merge: 17069a8 ee7ba47
+Author: Mert Yılmazer <134609539+Vladexxs@users.noreply.github.com>
+Date:   Sun Jan 12 15:45:29 2025 +0300
+
+    Merge pull request #54 from 7Hub-ACM431/Mert
+    
+    Mert
+
+[33mcommit ee7ba4794f92a5b201ab4cfb5c7f90707bb6de36[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Sun Jan 12 15:44:11 2025 +0300
+
+    improved: HelpScreen UI
+
+[33mcommit ebddadf5cced485896bd8b877342a2494d03d7e5[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Sun Jan 12 03:14:57 2025 +0300
+
+    feat: Add Help screen with navigation
+    - Add HelpScreen.kt with UI implementation
+    - Add HelpViewModel.kt for state management
+    - Update MyAppNavigation.kt with help route
+
+[33mcommit 17069a8a93202271e1a2bf04e2cc0fdda854a4e1[m
+Merge: 364455c abd7ae9
+Author: Mert Yılmazer <134609539+Vladexxs@users.noreply.github.com>
+Date:   Sun Jan 12 03:18:46 2025 +0300
+
+    Merge pull request #53 from 7Hub-ACM431/Mert
+    
+    Mert
+
+[33mcommit abd7ae9bf2577553ce1914a0d7fe8b86e7646820[m
+Merge: 17bccc8 dda72c7
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Sun Jan 12 02:57:48 2025 +0300
+
+    Merge remote-tracking branch 'origin/Mert' into Mert
+
+[33mcommit 17bccc8d93d890d51cb45420de4d036d95c577a5[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Sun Jan 12 02:54:39 2025 +0300
+
+    added: Help Screen and HelpViewModel
+
+[33mcommit dda72c77bbb6ca9d3e702d3a2df8645a3c16a0d9[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Sun Jan 12 02:54:39 2025 +0300
+
+    added: Help Screen and HelpViewModel
+
+[33mcommit 364455c7b5e34e5b86cf0bd13881b41a8f0cfd00[m
+Merge: 1a9feec 21049c3
+Author: Mert Yılmazer <134609539+Vladexxs@users.noreply.github.com>
+Date:   Sun Jan 12 02:10:11 2025 +0300
+
+    Merge pull request #52 from 7Hub-ACM431/Mert
+    
+    added: Account Screen and AccountViewModel
+
+[33mcommit 21049c3fe37c499ee6ed551d116b70cacecfd974[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Sun Jan 12 02:08:39 2025 +0300
+
+    fixed: teacher detail navigation
+    Added: Account Screen and AccountViewModel
+
+[33mcommit 1a9feece6eafa61cb01538cc189a098340850ce2[m
+Merge: 77e0629 5f1080e
+Author: Mert Yılmazer <134609539+Vladexxs@users.noreply.github.com>
+Date:   Sat Jan 11 23:54:17 2025 +0300
+
+    Merge pull request #51 from 7Hub-ACM431/Mert
+    
+    Mert
+
+[33mcommit 5f1080efabfef7b9b743df88ebd4ce1f8f46f708[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Sat Jan 11 23:25:22 2025 +0300
+
+    feat: Implement teacher detail navigation
+
+[33mcommit e710cfc32585e492e332aa408ed65b152d134ee0[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Fri Jan 10 20:20:51 2025 +0300
+
+    fixed Clubs title
+
+[33mcommit 77e06290f818b976122c8e779e435aa138a6e61d[m
+Merge: 7a17167 25c804e
+Author: Gürkan Karadaş <101065086+imacapella@users.noreply.github.com>
+Date:   Fri Jan 10 21:05:42 2025 +0300
+
+    Merge pull request #50 from 7Hub-ACM431/Gürkan
+    
+    Program logics and firebase integration improved
+
+[33mcommit 25c804e0f36b19f4f7b29a16998a5a019ecb1290[m
+Merge: 1503417 7a17167
+Author: Gürkan Karadaş <101065086+imacapella@users.noreply.github.com>
+Date:   Fri Jan 10 21:05:34 2025 +0300
+
+    Merge branch 'main' into Gürkan
+
+[33mcommit 15034179f25f04ef3b71415c41266cc9d10716cb[m
+Author: imacapella <gurkankaradas42@gmail.com>
+Date:   Fri Jan 10 21:02:02 2025 +0300
+
+    Program logics and firebase integration improved
+
+[33mcommit 7a17167e1f9b5d37f77d6cf846cbb28c52ec6ec7[m
+Merge: 6eed762 2517a8c
+Author: Mert Yılmazer <134609539+Vladexxs@users.noreply.github.com>
+Date:   Fri Jan 10 20:21:41 2025 +0300
+
+    Merge pull request #49 from 7Hub-ACM431/Zehra
+    
+    Zehra
+
+[33mcommit 2517a8c7344da203dde6f0514586274dae256c64[m
+Merge: eeb90ab 6eed762
+Author: Zehra Ergöktaş <zehranurergoktas23@gmail.com>
+Date:   Fri Jan 10 19:31:08 2025 +0300
+
+    Merge branch 'main' of https://github.com/7Hub-ACM431/7Hub into Zehra
+
+[33mcommit eeb90ab4da3c7a4b7252377967574b6a36a49504[m
+Author: Zehra Ergöktaş <zehranurergoktas23@gmail.com>
+Date:   Fri Jan 10 19:30:52 2025 +0300
+
+    .
+
+[33mcommit 6eed76285a017af6821d3631179f14245182ca0a[m
+Merge: 757e44d c984abb
+Author: Mert Yılmazer <134609539+Vladexxs@users.noreply.github.com>
+Date:   Fri Jan 10 19:06:54 2025 +0300
+
+    Merge pull request #48 from 7Hub-ACM431/Mert
+    
+    Mert
+
+[33mcommit c984abba2e26168780e3ccc0f6f4a3035ba3ed9f[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Fri Jan 10 19:06:16 2025 +0300
+
+    bug related to clubs has been fixed
+
+[33mcommit ede5510a16db0028cae629b86520f3b9762d10a4[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Fri Jan 10 17:42:31 2025 +0300
+
+    modified Course UI
+    added Preview Group Screen
+
+[33mcommit 757e44d28e3e8362c57255a60ebffada5a8cdc57[m
+Merge: a056cf0 847193b
+Author: Mert Yılmazer <134609539+Vladexxs@users.noreply.github.com>
+Date:   Fri Jan 10 15:24:56 2025 +0300
+
+    Merge pull request #47 from 7Hub-ACM431/Mert
+    
+    improved Groups logic
+
+[33mcommit 847193be5beb836351a2726479ecf2abf6b52b4c[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Fri Jan 10 15:23:18 2025 +0300
+
+    improved Groups logic
+
+[33mcommit a056cf0238ec93da5432824eeb264b7928f78a0f[m
+Merge: fcb50e9 691f6c0
+Author: Gürkan Karadaş <101065086+imacapella@users.noreply.github.com>
+Date:   Fri Jan 10 14:38:04 2025 +0300
+
+    Merge pull request #46 from 7Hub-ACM431/Gürkan
+    
+    Reset Password Logic Done
+
+[33mcommit 691f6c0c319cc913498472ddc350ac112ca2d047[m
+Author: imacapella <gurkankaradas42@gmail.com>
+Date:   Fri Jan 10 14:33:09 2025 +0300
+
+    Reset Password Logic Done
+
+[33mcommit fcb50e9c7323d7b6aa4c5a7b62690e6f94285686[m
+Merge: add8de4 a5ff19b
+Author: Mert Yılmazer <134609539+Vladexxs@users.noreply.github.com>
+Date:   Fri Jan 10 14:02:26 2025 +0300
+
+    Merge pull request #45 from 7Hub-ACM431/Mert
+    
+    improved NewGroup logic
+    added Firebase Data integration
+
+[33mcommit a5ff19bd43cf8eb5bf058d810af0310a4aa4ef30[m
+Author: Mert Yılmazer <mertyilmazer25@gmail.com>
+Date:   Fri Jan 10 14:00:11 2025 +0300
+
+    improved NewGroup logic
+
+[33mcommit add8de426b27f9fa8d8ee9e4a11a2e80d35c3c73[m
+Merge: 986d2bd a7e25be
+Author: Mert Y
