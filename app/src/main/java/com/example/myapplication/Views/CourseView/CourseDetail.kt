@@ -319,47 +319,6 @@ fun CourseDetailScreen(
                             color = Constants.hubWhite
                         )
                     }
-
-                    // Admin Tools
-                    if (displayState.userRole == "admin") {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        Button(
-                            onClick = { viewModel.updateInstructorData() },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF4CAF50)
-                            )
-                        ) {
-                            Text(
-                                text = "Update Database",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = Constants.hubWhite
-                            )
-                        }
-
-                        // Update Message
-                        displayState.updateMessage?.let { message ->
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = message,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = if (message.contains("başarısız")) Color.Red else Color(0xFF4CAF50),
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                        }
-
-                        // Loading Indicator
-                        if (displayState.isUpdating) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            CircularProgressIndicator(
-                                modifier = Modifier.align(Alignment.CenterHorizontally),
-                                color = Color(0xFF4CAF50)
-                            )
-                        }
-                    }
                 }
             }
         }
