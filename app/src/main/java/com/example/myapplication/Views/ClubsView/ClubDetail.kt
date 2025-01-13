@@ -26,7 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 fun ClubDetailScreen(
     viewModel: ClubDetailViewModel,
     onBackClick: () -> Unit,
-    onJoinClubClick: () -> Unit
+    onJoinClubClick: () -> Unit,
+    onJoinError: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -160,6 +161,7 @@ fun ClubDetailScreenPreview() {
     ClubDetailScreen(
         viewModel = previewViewModel,
         onBackClick = {},
-        onJoinClubClick = {}
+        onJoinClubClick = {},
+        onJoinError = {}
     )
 } 

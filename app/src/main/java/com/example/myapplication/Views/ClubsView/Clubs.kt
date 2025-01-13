@@ -35,6 +35,8 @@ fun ClubsScreen(
 ) {
     val clubs by viewModel.clubs.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
 
     Column(
         modifier = Modifier
@@ -88,7 +90,11 @@ fun ClubsScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(clubs) { club ->
-                ClubCard(club = club, onClick = { onClubClick(club) })
+                ClubCard(
+                    club = club,
+                    onClick = { onClubClick(club) },
+                    showArrow = selectedTab == ClubTab.MY_CLUBS
+                )
             }
         }
     }
@@ -126,7 +132,8 @@ fun TabButton(
 @Composable
 fun ClubCard(
     club: ClubModel,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    showArrow: Boolean = false
 ) {
     Card(
         modifier = Modifier
@@ -180,11 +187,13 @@ fun ClubCard(
             }
 
             // Arrow Icon
-            Icon(
-                imageVector = Icons.Default.ChevronRight,
-                contentDescription = "View Club",
-                tint = Constants.hubGreen
-            )
+            if (showArrow) {
+                Icon(
+                    imageVector = Icons.Default.ChevronRight,
+                    contentDescription = "Go to Chat",
+                    tint = Constants.hubGreen
+                )
+            }
         }
     }
 }
