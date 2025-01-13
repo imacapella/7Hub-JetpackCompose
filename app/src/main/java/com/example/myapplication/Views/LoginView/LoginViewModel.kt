@@ -30,7 +30,7 @@ class LoginViewModel : ViewModel() {
     }
 
     private fun isValidYeditepeEmail(email: String): Boolean {
-        return email.endsWith("@yeditepe.edu.tr")
+        return email.endsWith("@std.yeditepe.edu.tr")
     }
 
     private fun extractNameFromEmail(email: String): Pair<String, String>? {
@@ -41,9 +41,8 @@ class LoginViewModel : ViewModel() {
         } else null
     }
 
-    fun login(email : String,password : String){
-
-        if(email.isEmpty() || password.isEmpty()){
+    fun login(email : String, password : String) {
+        if(email.isEmpty() || password.isEmpty()) {
             _authState.value = AuthState.Error("Email or password can't be empty")
             return
         }
@@ -54,8 +53,8 @@ class LoginViewModel : ViewModel() {
         }
 
         _authState.value = AuthState.Loading
-        auth.signInWithEmailAndPassword(email,password)
-            .addOnCompleteListener{task->
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val nameInfo = extractNameFromEmail(email)
                     if (nameInfo != null) {

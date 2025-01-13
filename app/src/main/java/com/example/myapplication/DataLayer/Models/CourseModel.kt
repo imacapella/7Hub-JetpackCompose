@@ -1,7 +1,7 @@
 package com.example.myapplication.DataLayer.Models
 
 data class CourseModel(
-    val Identifier : String = "",
+    val Identifier: String = "",
     val courseName: String = "",
     val courseDesc: String? = null,
     val instructor: String? = null,
