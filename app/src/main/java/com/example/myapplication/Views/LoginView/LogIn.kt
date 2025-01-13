@@ -47,15 +47,21 @@ fun LoginPage(
     // Auth durumuna göre işlem yap
     LaunchedEffect(authState) {
         when (authState) {
-            is AuthState.Authenticated -> navController.navigate("chatlist") {
-                // Login ekranına geri dönüşü engelle
-                popUpTo("login") { inclusive = true }
+            is AuthState.Authenticated -> {
+                navController.navigate("chatlist") {
+                    // Login ekranına geri dönüşü engelle
+                    popUpTo("login") { inclusive = true }
+                }
             }
-            is AuthState.Error -> Toast.makeText(
-                context,
-                (authState as AuthState.Error).message,
-                Toast.LENGTH_SHORT
-            ).show()
+            is AuthState.Error -> {
+                Toast.makeText(
+                    context,
+                    (authState as AuthState.Error).message,
+                    Toast.LENGTH_SHORT
+                ).show()
+                // Hata mesajından sonra state'i sıfırla
+                loginViewModel.checkAuthStatus()
+            }
             else -> Unit
         }
     }
