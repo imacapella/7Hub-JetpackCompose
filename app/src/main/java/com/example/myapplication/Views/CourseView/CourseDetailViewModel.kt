@@ -86,13 +86,13 @@ class CourseDetailViewModel : ViewModel() {
         }
     }
     private fun loadInstructorDetails(instructorId: String) {
-        firestore.collection("users")
+        firestore.collection("instructors")
             .document(instructorId)
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    val photoUrl = document.getString("photoURL") ?: ""
-                    Log.d("CourseDetailViewModel", "Instructor photo URL: $photoUrl")
+                    val photoUrl = document.getString("imageUrl") ?: ""
+                    Log.d("CourseDetailViewModel", "Instructor image URL: $photoUrl")
                     
                     _uiState.value = _uiState.value.copy(
                         instructorImageUrl = photoUrl
