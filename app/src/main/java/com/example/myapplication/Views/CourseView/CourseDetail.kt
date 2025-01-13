@@ -219,7 +219,7 @@ fun CourseDetailScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 32.dp)
                     ) {
-                        Text("Sohbete Katıl")
+                        Text("Join Chat")
                     }
 
                     Spacer(modifier = Modifier.height(32.dp))

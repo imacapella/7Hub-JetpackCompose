@@ -92,7 +92,7 @@ class CourseDetailViewModel : ViewModel() {
             .addOnSuccessListener { document ->
                 if (document.exists()) {
                     val photoUrl = document.getString("imageUrl") ?: ""
-                    Log.d("CourseDetailViewModel", "Instructor photo URL: $photoUrl")
+                    Log.d("CourseDetailViewModel", "Instructor image URL: $photoUrl")
                     
                     _uiState.value = _uiState.value.copy(
                         instructorImageUrl = photoUrl
