@@ -228,69 +228,6 @@ fun CategoryCard(
     }
 }
 
-@Composable
-fun CourseCard(
-    course: CourseModel,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .width(350.dp)
-            .height(250.dp)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
-            ),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(155.dp)
-                    .background(
-                        color = Color(0xFF9EC7F2),
-                        shape = RoundedCornerShape(12.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = course.Identifier,
-                    fontSize = 55.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = course.courseName,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF342E37)
-                )
-                course.instructor?.let {
-                    Text(
-                        text = it,
-                        fontSize = 14.sp,
-                        color = Color(0xFF718A39)
-                    )
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun CategorySection(navController: NavController) {

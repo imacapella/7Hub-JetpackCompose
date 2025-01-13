@@ -24,7 +24,7 @@ data class CourseDetailUiState(
     val syllabus: String = "",
     val announcements: List<String> = emptyList(),
     val instructorId: String = "",
-    val instructorImageUrl: String = ""
+    val instructorImageUrl: String = "",
     val userRole: String = "student"
 )
 
@@ -86,7 +86,7 @@ class CourseDetailViewModel : ViewModel() {
                 if (document.exists()) {
                     // Mevcut state'i koru, sadece instructor bilgilerini güncelle
                     _uiState.value = _uiState.value.copy(
-                        instructorName = document.getString("name") ?: _uiState.value.instructorName,
+                        instructor = document.getString("name") ?: _uiState.value.instructor,
                         instructorImageUrl = document.getString("photoUrl") ?: _uiState.value.instructorImageUrl
                     )
                 }
