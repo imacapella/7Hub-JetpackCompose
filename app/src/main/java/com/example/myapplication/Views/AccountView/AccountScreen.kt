@@ -33,15 +33,70 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.R
 import com.example.myapplication.Utilities.Constants
+import com.example.myapplication.Views.LoginView.LoginViewModel
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 @Composable
 fun AccountScreen(
     viewModel: AccountViewModel = viewModel(),
+    loginViewModel: LoginViewModel = viewModel(),
     onNavigateBack: () -> Unit,
     onSignOut: () -> Unit,
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    
+    // Dialog state'ini tutmak için
+    var showDialog by remember { mutableStateOf(false) }
+
+    // Alert Dialog
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = {
+                Text(
+                    text = "Change Password",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "Are you sure you want to change your password?",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                        navController.navigate("resetpw")
+                    }
+                ) {
+                    Text(
+                        text = "Yes",
+                        color = Constants.hubGreen,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDialog = false }
+                ) {
+                    Text(
+                        text = "No",
+                        color = Color.Gray,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Title Circle
@@ -122,7 +177,7 @@ fun AccountScreen(
             MenuButton(
                 text = "Change Password",
                 icon = Icons.Default.Lock,
-                onClick = { /* Navigate to Change Password */ }
+                onClick = { showDialog = true }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -139,6 +194,7 @@ fun AccountScreen(
             Button(
                 onClick = {
                     viewModel.signOut()
+                    loginViewModel.signout()
                     onSignOut()
                 },
                 modifier = Modifier
@@ -206,10 +262,13 @@ fun MenuButton(
 @Composable
 fun AccountScreenPreview() {
     val previewNavController = rememberNavController()
-    val previewViewModel: AccountViewModel = viewModel()
+    val previewAccountViewModel: AccountViewModel = viewModel()
+    val previewLoginViewModel: LoginViewModel = viewModel()
+    
     MaterialTheme {
         AccountScreen(
-            viewModel = previewViewModel,
+            viewModel = previewAccountViewModel,
+            loginViewModel = previewLoginViewModel,
             onNavigateBack = {},
             onSignOut = {},
             navController = previewNavController
