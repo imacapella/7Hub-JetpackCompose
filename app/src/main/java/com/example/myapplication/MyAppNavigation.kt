@@ -3,6 +3,7 @@ package com.example.myapplication
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
@@ -65,6 +66,7 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: 
     object Reviews : BottomNavItem("reviews", Icons.Default.Star, "Reviews")
     object Account : BottomNavItem("account", Icons.Default.Person, "Account")
     object Chat : BottomNavItem("chatlist", Icons.Default.Chat, "Chat")
+    object Clubs : BottomNavItem("clubs", Icons.Default.Group, "Clubs")
 }
 
 @Composable
@@ -73,7 +75,8 @@ fun AppBottomNavigation(navController: NavController) {
         BottomNavItem.Home,
         BottomNavItem.Reviews,
         BottomNavItem.Account,
-        BottomNavItem.Chat
+        BottomNavItem.Chat,
+        BottomNavItem.Clubs
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -255,7 +258,11 @@ fun MainScreen(loginViewModel: LoginViewModel) {
 
                 ClubsScreen(
                     viewModel = viewModel,
-                    onNavigateBack = { navController.navigateUp() },
+                    onNavigateBack = { 
+                        navController.navigate("home") {
+                            popUpTo("home") { inclusive = false }
+                        }
+                    },
                     onClubClick = { club ->
                         when (selectedTab) {
                             ClubTab.MY_CLUBS -> {
