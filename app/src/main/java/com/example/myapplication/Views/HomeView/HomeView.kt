@@ -120,7 +120,7 @@ fun TitleCircle() {
         val circleCenterY = -circleRadius.toPx() + 150f
 
         drawCircle(
-            color = Color(0xFF1E3A5F),
+            color = Constants.hubBlue,
             radius = circleRadius.toPx(),
             center = Offset(circleCenterX, circleCenterY)
         )
@@ -166,11 +166,14 @@ fun SearchBar() {
     TextField(
         value = searchText,
         onValueChange = { searchText = it },
-        placeholder = { Text("What are you looking for?") },
+        placeholder = { Text(
+            text = "What are you looking for?",
+            color = Constants.hubGreen) },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = null
+                contentDescription = null,
+                tint = Constants.hubGreen
             )
         },
         modifier = Modifier
@@ -181,7 +184,7 @@ fun SearchBar() {
         colors = TextFieldDefaults.textFieldColors(
             focusedIndicatorColor = Constants.hubGreen,
             unfocusedIndicatorColor = Constants.hubDark,
-            containerColor = Constants.hubDark
+            containerColor = Constants.hubWhite
         )
     )
 }
@@ -298,19 +301,19 @@ fun CategorySection(navController: NavController) {
         CategoryCard(
             title = "Courses",
             icon = Icons.Default.Book,
-            backgroundColor = Color(0xFF1E3A5F),
+            backgroundColor = Constants.hubBlue,
             onClick = { navController.navigate("courses") }
         )
         CategoryCard(
             title = "Groups",
             icon = Icons.Default.Group,
-            backgroundColor = Color(0xFF4285F4),
+            backgroundColor = Constants.hubBabyBlue,
             onClick = { navController.navigate("groups") }
         )
         CategoryCard(
             title = "Clubs",
             icon = Icons.Default.People,
-            backgroundColor = Color(0xFF4285F4),
+            backgroundColor = Constants.hubBabyBlue,
             onClick = { navController.navigate("clubs") }
         )
     }

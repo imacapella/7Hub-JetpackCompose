@@ -26,12 +26,25 @@ class ChatViewModel : ViewModel() {
     val currentUserId = Firebase.auth.currentUser?.uid
     var chatName: String = ""
         private set
+    var chatUserPhotoUrl: String = ""
+        private set
 
     fun loadMessages(chatId: String) {
         // Önce chat bilgilerini al
         firestore.collection("chats").document(chatId).get()
             .addOnSuccessListener { document ->
                 chatName = document.getString("name") ?: ""
+                // Chat'teki diğer kullanıcının ID'sini al
+                val participants = document.get("participants") as? List<String>
+                val otherUserId = participants?.find { it != currentUserId }
+                
+                // Diğer kullanıcının profil resmini al
+                otherUserId?.let { userId ->
+                    firestore.collection("users").document(userId).get()
+                        .addOnSuccessListener { userDoc ->
+                            chatUserPhotoUrl = userDoc.getString("photoUrl") ?: ""
+                        }
+                }
             }
 
         // Mesajları dinle
