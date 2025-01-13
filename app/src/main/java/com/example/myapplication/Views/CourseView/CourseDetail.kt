@@ -293,7 +293,10 @@ fun CourseDetailScreen(
                             modifier = Modifier.padding(vertical = 8.dp)
                         ) {
                             AsyncImage(
-                                model = displayState.instructorImageUrl,
+                                model = displayState.instructorImageUrl.ifEmpty { 
+                                    // Varsayılan bir placeholder görsel URL'i ekleyebilirsiniz
+                                    "https://yulearnt.yeditepe.edu.tr/sites/default/files/styles/mt_photo/public/2022-02/engin_0.jpg?itok=L2QwLSvM"
+                                },
                                 contentDescription = "Instructor image",
                                 modifier = Modifier
                                     .size(64.dp)
@@ -307,7 +310,6 @@ fun CourseDetailScreen(
                                 color = Constants.hubGreen
                             )
                         }
-
                     }
                 }
             }

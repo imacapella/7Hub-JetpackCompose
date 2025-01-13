@@ -47,6 +47,8 @@ class CourseDetailViewModel : ViewModel() {
                 if (document != null && document.exists()) {
                     Log.d("CourseDetailViewModel", "Course document found: ${document.data}")
                     try {
+                        val instructorId = document.getString("instructorId") ?: ""
+                        
                         val newState = _uiState.value.copy(
                             isLoading = false,
                             identifier = document.id,
@@ -59,10 +61,15 @@ class CourseDetailViewModel : ViewModel() {
                             prerequisites = document.get("prerequisites") as? List<String> ?: emptyList(),
                             syllabus = document.getString("syllabus") ?: "",
                             announcements = document.get("announcements") as? List<String> ?: emptyList(),
-                            instructorId = document.getString("instructorId") ?: "",
-                            instructorImageUrl = document.getString("instructorImageUrl") ?: ""
+                            instructorId = instructorId
                         )
                         _uiState.value = newState
+                        
+                        // Instructor detaylarını yükle
+                        if (instructorId.isNotEmpty()) {
+                            loadInstructorDetails(instructorId)
+                        }
+                        
                         Log.d("CourseDetailViewModel", "Updated UI state: $newState")
                     } catch (e: Exception) {
                         Log.e("CourseDetailViewModel", "Error parsing course details", e)
@@ -84,10 +91,11 @@ class CourseDetailViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    // Mevcut state'i koru, sadece instructor bilgilerini güncelle
+                    val photoUrl = document.getString("photoURL") ?: ""
+                    Log.d("CourseDetailViewModel", "Instructor photo URL: $photoUrl")
+                    
                     _uiState.value = _uiState.value.copy(
-                        instructor = document.getString("name") ?: _uiState.value.instructor,
-                        instructorImageUrl = document.getString("photoUrl") ?: _uiState.value.instructorImageUrl
+                        instructorImageUrl = photoUrl
                     )
                 }
             }
