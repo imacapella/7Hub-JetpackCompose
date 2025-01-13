@@ -44,6 +44,12 @@ import com.example.myapplication.Views.ReviewScreen.dummyTeacher2
 import com.example.myapplication.Views.AccountView.AccountScreen
 import com.example.myapplication.Views.CourseView.CoursesViewModel
 import com.example.myapplication.Views.HelpView.HelpScreen
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
+import com.example.myapplication.Views.ClubsView.ClubTab
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Home : BottomNavItem("home", Icons.Default.Home, "Home")
@@ -108,6 +114,7 @@ fun AppBottomNavigation(navController: NavController) {
 fun MainScreen(loginViewModel: LoginViewModel) {
     val navController = rememberNavController()
     val authState by loginViewModel.authState.observeAsState()
+    val db = remember { Firebase.firestore }
 
     LaunchedEffect(authState) {
         when (authState) {
@@ -232,10 +239,21 @@ fun MainScreen(loginViewModel: LoginViewModel) {
             }
 
             composable("clubs") {
+                val viewModel: ClubsViewModel = viewModel()
+                val selectedTab by viewModel.selectedTab.collectAsState()
+
                 ClubsScreen(
+                    viewModel = viewModel,
                     onNavigateBack = { navController.navigateUp() },
                     onClubClick = { club ->
-                        navController.navigate("club_detail/${club.clubId}")
+                        when (selectedTab) {
+                            ClubTab.MY_CLUBS -> {
+                                navController.navigate("chat/${club.chatId}")
+                            }
+                            ClubTab.ALL_CLUBS -> {
+                                navController.navigate("club_detail/${club.clubId}")
+                            }
+                        }
                     }
                 )
             }
@@ -245,10 +263,42 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                 arguments = listOf(navArgument("clubId") { type = NavType.StringType })
             ) { backStackEntry ->
                 val clubId = backStackEntry.arguments?.getString("clubId") ?: return@composable
+                val viewModel = remember { ClubDetailViewModel() }
+                
+                LaunchedEffect(key1 = clubId, key2 = viewModel) {
+                    try {
+                        val club = db.collection("clubs")
+                            .document(clubId)
+                            .get()
+                            .await()
+                            
+                        val icon = club.getString("icon") ?: "default"
+                        val name = club.getString("name") ?: ""
+                        val description = club.getString("description") ?: ""
+                        val members = club.get("members") as? List<*>
+                        
+                        viewModel.updateClubDetails(
+                            clubName = name,
+                            clubDescription = description,
+                            clubIcon = icon,
+                            memberCount = members?.size ?: 0
+                        )
+                    } catch (e: Exception) {
+                        println("Hata: ${e.message}")
+                    }
+                }
+                
                 ClubDetailScreen(
-                    viewModel = ClubDetailViewModel(),
+                    viewModel = viewModel,
                     onBackClick = { navController.navigateUp() },
-                    onJoinClubClick = { /* Kulübe katılma işlemi */ }
+                    onJoinClubClick = {
+                        navController.navigate("chatlist") {
+                            popUpTo("chatlist") { inclusive = true }
+                        }
+                    },
+                    onJoinError = { errorMessage ->
+                        println("Hata: $errorMessage")
+                    }
                 )
             }
 
