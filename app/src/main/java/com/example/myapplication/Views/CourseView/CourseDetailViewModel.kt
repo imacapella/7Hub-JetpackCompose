@@ -28,9 +28,7 @@ data class CourseDetailUiState(
     val prerequisites: List<String> = emptyList(),
     val syllabus: String? = null,
     val announcements: List<String> = emptyList(),
-    val userRole: String = "student",
-    val isUpdating: Boolean = false,
-    val updateMessage: String? = null
+    val userRole: String = "student"
 )
 
 class CourseDetailViewModel : ViewModel() {
@@ -183,130 +181,6 @@ class CourseDetailViewModel : ViewModel() {
             }
             .addOnFailureListener { e ->
                 Log.e("CourseDetailViewModel", "Error loading instructor details", e)
-            }
-    }
-
-    fun updateInstructorData() {
-        _uiState.value = _uiState.value.copy(isUpdating = true, updateMessage = "Veritabanı güncelleniyor...")
-        
-        // Instructor koleksiyonunu oluştur
-        val batch = firestore.batch()
-        
-        // Önce öğretmenleri bul
-        firestore.collection("users")
-            .whereEqualTo("role", "instructor")
-            .get()
-            .addOnSuccessListener { instructors ->
-                instructors.forEach { instructor ->
-                    // InstructorInfo koleksiyonuna ekle
-                    val instructorInfoRef = firestore.collection("instructorInfo").document(instructor.id)
-                    val instructorInfo = mapOf(
-                        "userId" to instructor.id,
-                        "name" to (instructor.getString("name") ?: ""),
-                        "surname" to (instructor.getString("surname") ?: ""),
-                        "title" to (instructor.getString("title") ?: "Dr."),
-                        "department" to (instructor.getString("department") ?: ""),
-                        "email" to (instructor.getString("email") ?: ""),
-                        "officeHours" to listOf(
-                            mapOf(
-                                "day" to "Monday",
-                                "startTime" to "10:00",
-                                "endTime" to "12:00"
-                            ),
-                            mapOf(
-                                "day" to "Wednesday",
-                                "startTime" to "14:00",
-                                "endTime" to "16:00"
-                            )
-                        ),
-                        "officeLocation" to "B-Block Room 205",
-                        "researchInterests" to listOf(
-                            "Artificial Intelligence",
-                            "Machine Learning",
-                            "Data Science"
-                        ),
-                        "publications" to listOf(
-                            mapOf(
-                                "title" to "Sample Publication 1",
-                                "year" to 2023,
-                                "journal" to "International Journal of Computer Science"
-                            )
-                        ),
-                        "courses" to listOf(),
-                        "ratings" to mapOf(
-                            "teaching" to 0.0,
-                            "communication" to 0.0,
-                            "expertise" to 0.0,
-                            "overall" to 0.0,
-                            "totalRatings" to 0
-                        ),
-                        "updatedAt" to FieldValue.serverTimestamp()
-                    )
-                    
-                    batch.set(instructorInfoRef, instructorInfo)
-                }
-
-                // Dersleri güncelle
-                firestore.collection("courses")
-                    .get()
-                    .addOnSuccessListener { courses ->
-                        courses.forEach { course ->
-                            val courseRef = firestore.collection("courses").document(course.id)
-                            val instructorId = course.getString("instructorId")
-                            
-                            // Kredi ekle
-                            val credits = listOf(3, 6, 9, 12).random()
-                            batch.update(courseRef, "courseCredit", credits)
-                            
-                            // InstructorHistory ekle
-                            if (instructorId != null) {
-                                val instructorHistory = listOf(
-                                    mapOf(
-                                        "instructorId" to instructorId,
-                                        "semester" to (course.getString("semester") ?: "FALL_2024"),
-                                        "ratings" to mapOf(
-                                            "teaching" to 0.0,
-                                            "communication" to 0.0,
-                                            "expertise" to 0.0,
-                                            "overall" to 0.0,
-                                            "totalRatings" to 0
-                                        )
-                                    )
-                                )
-                                batch.update(courseRef, "instructorHistory", instructorHistory)
-                            }
-                        }
-
-                        // Tüm değişiklikleri commit et
-                        batch.commit()
-                            .addOnSuccessListener {
-                                _uiState.value = _uiState.value.copy(
-                                    isUpdating = false,
-                                    updateMessage = "Veritabanı başarıyla güncellendi!\n" +
-                                            "- Instructor bilgileri eklendi\n" +
-                                            "- Ders kredileri güncellendi\n" +
-                                            "- Instructor geçmişi eklendi"
-                                )
-                            }
-                            .addOnFailureListener { e ->
-                                _uiState.value = _uiState.value.copy(
-                                    isUpdating = false,
-                                    updateMessage = "Güncelleme başarısız: ${e.message}"
-                                )
-                            }
-                    }
-                    .addOnFailureListener { e ->
-                        _uiState.value = _uiState.value.copy(
-                            isUpdating = false,
-                            updateMessage = "Dersler alınırken hata oluştu: ${e.message}"
-                        )
-                    }
-            }
-            .addOnFailureListener { e ->
-                _uiState.value = _uiState.value.copy(
-                    isUpdating = false,
-                    updateMessage = "Öğretmenler alınırken hata oluştu: ${e.message}"
-                )
             }
     }
 }
