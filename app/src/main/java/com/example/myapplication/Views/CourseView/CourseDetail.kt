@@ -286,7 +286,6 @@ fun CourseDetailScreen(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Row(
@@ -308,6 +307,7 @@ fun CourseDetailScreen(
                                 color = Constants.hubGreen
                             )
                         }
+
                     }
                 }
             }

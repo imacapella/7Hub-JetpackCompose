@@ -25,6 +25,7 @@ data class CourseDetailUiState(
     val announcements: List<String> = emptyList(),
     val instructorId: String = "",
     val instructorImageUrl: String = ""
+    val userRole: String = "student"
 )
 
 class CourseDetailViewModel : ViewModel() {
@@ -76,5 +77,22 @@ class CourseDetailViewModel : ViewModel() {
                 _uiState.value = _uiState.value.copy(isLoading = false)
             }
         }
+    }
+    private fun loadInstructorDetails(instructorId: String) {
+        firestore.collection("users")
+            .document(instructorId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    // Mevcut state'i koru, sadece instructor bilgilerini güncelle
+                    _uiState.value = _uiState.value.copy(
+                        instructorName = document.getString("name") ?: _uiState.value.instructorName,
+                        instructorImageUrl = document.getString("photoUrl") ?: _uiState.value.instructorImageUrl
+                    )
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("CourseDetailViewModel", "Error loading instructor details", e)
+            }
     }
 }

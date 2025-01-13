@@ -41,7 +41,7 @@ fun ClubDetailScreen(
             val circleCenterY = -circleRadius + 210f
 
             drawCircle(
-                color = Constants.hubBabyBlue,
+                color = Constants.hubBlue,
                 radius = circleRadius,
                 center = Offset(circleCenterX, circleCenterY)
             )
