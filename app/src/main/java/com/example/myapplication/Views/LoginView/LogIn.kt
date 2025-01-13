@@ -98,12 +98,11 @@ fun LoginPage(
 
             Spacer(modifier = Modifier.height(40.dp))
             CustomButton(
-                buttonColor = Constants.hubBabyBlue,
+
                 buttonText = "Log In",
                 buttonTextColor = Constants.hubWhite,
                 buttonIcon = Icons.Filled.Login,
-                buttonHeight = 50,
-                buttonWidth = 150
+
             ) {
                 loginViewModel.login(email, password)
             }
@@ -122,7 +121,7 @@ fun HeadCircle() {
 
         // Dairenin çizilmesi
         drawCircle(
-            color = Constants.hubDarkGray, // Dairenin rengi
+            color = Constants.hubBlue, // Dairenin rengi
             radius = circleRadius.toPx(), // Yarıçap
             center = Offset(circleCenterX, circleCenterY) // Dairenin merkezi
         )
@@ -136,7 +135,7 @@ fun WelcomeSection(){
         text = "Hello Student!",
         style = MaterialTheme.typography.headlineMedium,
         fontSize = 35.sp,
-        color = Constants.hubDark,
+        color = Constants.hubDarkGray,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Start,
         modifier = Modifier.padding(bottom = 4.dp)
@@ -144,7 +143,7 @@ fun WelcomeSection(){
     Text(
         text = "Log in with your OBS information",
         fontSize = 16.sp,
-        color = Color(0xFF88B04B),
+        color = Constants.hubDarkGray,
         modifier = Modifier.padding(bottom = 16.dp)
     )
 }
@@ -152,7 +151,7 @@ fun WelcomeSection(){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserNameView(value: String, onValueChange: (String) -> Unit) {
-    val customColor = Color(0xFF718A39)
+    val customColor = Constants.hubGray
 
     OutlinedTextField(
         value = value,
@@ -162,7 +161,7 @@ fun UserNameView(value: String, onValueChange: (String) -> Unit) {
             .height(70.dp)
             .padding(8.dp),
         shape = RoundedCornerShape(20.dp),
-        placeholder = { Text("Enter your username", color = Color.Gray) },
+        placeholder = { Text("Enter your username", color = Constants.hubGray) },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Person,
@@ -183,7 +182,7 @@ fun UserNameView(value: String, onValueChange: (String) -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PasswordView(value: String, onValueChange: (String) -> Unit) {
-    val customColor = Color(0xFF718A39)
+    val customColor = Constants.hubGray
 
     OutlinedTextField(
         value = value,
@@ -194,7 +193,7 @@ fun PasswordView(value: String, onValueChange: (String) -> Unit) {
             .clip(RoundedCornerShape(20.dp))
             .padding(8.dp),
         shape = RoundedCornerShape(20.dp),
-        placeholder = { Text("Enter your password", color = Color.Gray) },
+        placeholder = { Text("Enter your password", color = Constants.hubGray) },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Lock,
@@ -203,7 +202,7 @@ fun PasswordView(value: String, onValueChange: (String) -> Unit) {
             )
         },
         singleLine = true,
-        textStyle = TextStyle(color = Color.Black), // Yazı rengini siyah yapıyoruz
+        textStyle = TextStyle(color = Constants.hubDark), // Yazı rengini siyah yapıyoruz
         visualTransformation = PasswordVisualTransformation(),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = customColor,
@@ -220,7 +219,7 @@ fun ForgotPasswordText(onClick: () -> Unit) {
         text = buildAnnotatedString {
             withStyle(
                 style = SpanStyle(
-                    color = Color(0xFF718A39),
+                    color = Constants.hubAcikYesil,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
                     textDecoration = TextDecoration.Underline
