@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -66,7 +67,7 @@ fun CourseDetailScreen(
             val circleCenterY = -circleRadius + 230f
 
             drawCircle(
-                color = Constants.hubBabyBlue,
+                color = Constants.hubBlue,
                 radius = circleRadius,
                 center = Offset(circleCenterX, circleCenterY)
             )
@@ -148,7 +149,10 @@ fun CourseDetailScreen(
                     // Course Name
                     Text(
                         text = displayState.courseName,
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = Constants.hubDark
+                        ),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
@@ -158,14 +162,11 @@ fun CourseDetailScreen(
                     // Description
                     if (displayState.courseDesc.isNotEmpty()) {
                         Text(
-                            text = "Description",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
-                        Text(
                             text = displayState.courseDesc,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 24.sp,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
@@ -208,18 +209,35 @@ fun CourseDetailScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // Join Chat Button
+                    // Chat Button
                     Button(
                         onClick = onChatClick,
+                        modifier = Modifier
+                            .width(110.dp)
+                            .height(50.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Constants.hubGreen
                         ),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp)
+                        shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Join Chat")
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Chat",
+                                color = Color.White,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(32.dp))
