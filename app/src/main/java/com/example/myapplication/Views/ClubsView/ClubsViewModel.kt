@@ -17,7 +17,7 @@ data class ClubModel(
     val description: String = "",
     val memberCount: Int = 0,
     val members: List<String> = emptyList(),
-    val chatId: String = ""
+    val chatId: String = ""  // Chat ID'sini ekledik
 )
 
 enum class ClubTab {
@@ -75,7 +75,7 @@ class ClubsViewModel : ViewModel() {
                                     description = doc.getString("description") ?: "",
                                     memberCount = (doc.get("members") as? List<*>)?.size ?: 0,
                                     members = (doc.get("members") as? List<String>) ?: emptyList(),
-                                    chatId = doc.id
+                                    chatId = doc.id  // Club ID'si aynı zamanda chat ID'si
                                 )
                             }
                             _clubs.value = myClubs

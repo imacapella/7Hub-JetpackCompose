@@ -52,12 +52,21 @@ import com.example.myapplication.Views.LoginView.LoginViewModel
 import com.example.myapplication.Views.ResetPassword.ResetPasswordScreen
 import com.example.myapplication.Views.ResetPassword.ResetPasswordViewModel
 import com.example.myapplication.Views.ReviewScreen.ReviewCoursesScreen
-import com.example.myapplication.Views.ReviewScreen.ReviewScreen
+
+import com.example.myapplication.Views.ClubsView.ClubsScreen
+import com.example.myapplication.Views.ClubsView.ClubsViewModel
+import com.example.myapplication.Views.ClubsView.ClubDetailScreen
+import com.example.myapplication.Views.ClubsView.ClubDetailViewModel
 import com.example.myapplication.Views.ReviewScreen.TeacherDetailsScreen
 import com.example.myapplication.Views.ReviewScreen.dummyTeacher1
 import com.example.myapplication.Views.ReviewScreen.dummyTeacher2
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
+import com.example.myapplication.Views.AccountView.AccountScreen
+import com.example.myapplication.Views.CourseView.CoursesViewModel
+import com.example.myapplication.Views.HelpView.HelpScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.Views.ClubsView.ClubTab
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
@@ -275,30 +284,24 @@ fun MainScreen(loginViewModel: LoginViewModel) {
             ) { backStackEntry ->
                 val clubId = backStackEntry.arguments?.getString("clubId") ?: return@composable
                 val viewModel = remember { ClubDetailViewModel() }
-
-                LaunchedEffect(key1 = clubId, key2 = viewModel) {
+                
+                LaunchedEffect(clubId) {
                     try {
                         val club = db.collection("clubs")
                             .document(clubId)
                             .get()
                             .await()
-
-                        val icon = club.getString("icon") ?: "default"
-                        val name = club.getString("name") ?: ""
-                        val description = club.getString("description") ?: ""
-                        val members = club.get("members") as? List<*>
-
+                            
                         viewModel.updateClubDetails(
-                            clubName = name,
-                            clubDescription = description,
-                            clubIcon = icon,
-                            memberCount = members?.size ?: 0
+                            clubName = club.getString("name") ?: "",
+                            clubDescription = club.getString("description") ?: "",
+                            clubIcon = club.getString("icon") ?: "default",
+                            memberCount = (club.get("members") as? List<*>)?.size ?: 0
                         )
                     } catch (e: Exception) {
                         println("Hata: ${e.message}")
                     }
                 }
-
                 ClubDetailScreen(
                     viewModel = viewModel,
                     onBackClick = { navController.navigateUp() },
@@ -307,7 +310,7 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                             popUpTo("chatlist") { inclusive = true }
                         }
                     },
-                    onJoinError = { errorMessage ->
+                    onJoinError = { errorMessage: String ->  
                         println("Hata: $errorMessage")
                     }
                 )

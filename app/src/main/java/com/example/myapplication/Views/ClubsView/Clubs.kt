@@ -83,6 +83,19 @@ fun ClubsScreen(
             )
         }
 
+        // Clubs List
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(clubs) { club ->
+                ClubCard(
+                    club = club,
+                    onClick = { onClubClick(club) },
+                    showArrow = selectedTab == ClubTab.MY_CLUBS
+                )
         // Content
         Box(modifier = Modifier.fillMaxSize()) {
             when {
