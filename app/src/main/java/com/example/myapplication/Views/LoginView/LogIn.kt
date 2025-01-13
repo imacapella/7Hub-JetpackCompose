@@ -116,7 +116,7 @@ fun HeadCircle() {
 
         // Dairenin çizilmesi
         drawCircle(
-            color = Constants.hubDarkBlue, // Dairenin rengi
+            color = Constants.hubDarkGray, // Dairenin rengi
             radius = circleRadius.toPx(), // Yarıçap
             center = Offset(circleCenterX, circleCenterY) // Dairenin merkezi
         )

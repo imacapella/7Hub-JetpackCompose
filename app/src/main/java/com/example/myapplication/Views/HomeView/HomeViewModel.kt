@@ -36,16 +36,13 @@ class HomeViewModel : ViewModel() {
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
                     val displayName = document.getString("displayName") ?: ""
-                    _userName.value = displayName.split(" ").firstOrNull()
+                    _userName.value = displayName
                     _studentId.value = document.getString("studentId") ?: ""
                     
-                    // Kullanıcının kurs kodlarını al
+                    // Get user's courses
                     val userCourses = document.get("courses") as? List<String> ?: emptyList()
+                    Log.d("HomeViewModel", "User courses: $userCourses")
                     loadUserCourses(userCourses)
-                    
-                    Log.d("HomeViewModel", "DisplayName: $displayName")
-                    Log.d("HomeViewModel", "StudentId: ${_studentId.value}")
-                    Log.d("HomeViewModel", "Course Codes: $userCourses")
                 }
             }
             .addOnFailureListener { e ->
@@ -56,26 +53,46 @@ class HomeViewModel : ViewModel() {
     private fun loadUserCourses(courseCodes: List<String>) {
         if (courseCodes.isEmpty()) {
             _courses.value = emptyList()
+            Log.d("HomeViewModel", "No courses found for user")
             return
         }
+
+        Log.d("HomeViewModel", "Loading courses: $courseCodes")
 
         firestore.collection("courses")
             .get()
             .addOnSuccessListener { documents ->
+                Log.d("HomeViewModel", "Total courses found: ${documents.size()}")
                 val coursesList = documents.mapNotNull { doc ->
-                    val courseCode = doc.getString("courseCode")
-                    if (courseCode in courseCodes) {
-                        CourseModel(
-                            courseId = doc.id,
-                            courseCode = courseCode!!,
-                            courseName = doc.getString("courseName") ?: return@mapNotNull null,
-                            description = doc.getString("description") ?: "",
-                            instructor = doc.getString("instructor") ?: return@mapNotNull null
-                        )
+                    val courseId = doc.id
+                    if (courseId in courseCodes) {
+                        try {
+                            CourseModel(
+                                Identifier = courseId,
+                                courseName = doc.getString("name") ?: return@mapNotNull null,
+                                courseDesc = doc.getString("description"),
+                                instructor = doc.getString("instructor"),
+                                courseCredit = doc.getLong("courseCredit")?.toInt(),
+                                courseRating = doc.getLong("courseRating")?.toInt() ?: 0,
+                                semester = doc.getString("semester"),
+                                prerequisites = doc.get("prerequisites") as? List<String> ?: emptyList(),
+                                syllabus = doc.getString("syllabus"),
+                                announcements = doc.get("announcements") as? List<String> ?: emptyList(),
+                                instructorId = doc.getString("instructorId"),
+                                instructorRef = doc.getDocumentReference("instructorRef")?.path,
+                                instructorImageUrl = doc.getString("instructorImageUrl")
+                            ).also {
+                                Log.d("HomeViewModel", "Successfully loaded course: ${it.courseName} with ID: ${it.Identifier}")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("HomeViewModel", "Error parsing course: $courseId", e)
+                            Log.e("HomeViewModel", "Document data: ${doc.data}")
+                            null
+                        }
                     } else null
                 }
                 _courses.value = coursesList
-                Log.d("HomeViewModel", "Loaded user courses: ${coursesList.size}")
+                Log.d("HomeViewModel", "Final courses loaded: ${coursesList.size}")
             }
             .addOnFailureListener { e ->
                 Log.e("HomeViewModel", "Error loading courses", e)

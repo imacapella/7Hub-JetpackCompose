@@ -5,9 +5,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -42,6 +42,7 @@ import com.example.myapplication.Views.ReviewScreen.TeacherDetailsScreen
 import com.example.myapplication.Views.ReviewScreen.dummyTeacher1
 import com.example.myapplication.Views.ReviewScreen.dummyTeacher2
 import com.example.myapplication.Views.AccountView.AccountScreen
+import com.example.myapplication.Views.CourseView.CoursesViewModel
 import com.example.myapplication.Views.HelpView.HelpScreen
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
@@ -156,7 +157,11 @@ fun MainScreen(loginViewModel: LoginViewModel) {
 
             composable("courses") {
                 CoursesScreen(
-                    onNavigateBack = { navController.navigateUp() }
+                    viewModel = CoursesViewModel(),
+                    onNavigateBack = { navController.navigateUp() },
+                    onCourseClick = { course ->
+                        navController.navigate("course_detail/${course.Identifier}")
+                    }
                 )
             }
 
@@ -169,7 +174,9 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                     viewModel = CourseDetailViewModel(),
                     courseCode = courseCode,
                     onBackClick = { navController.navigateUp() },
-                    onChatClick = { /* Chat işlevi eklenecek */ }
+                    onChatClick = { 
+                        // TODO: Navigate to chat screen when implemented
+                    }
                 )
             }
 
