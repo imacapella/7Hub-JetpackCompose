@@ -241,6 +241,7 @@ fun MainScreen(loginViewModel: LoginViewModel) {
             composable("account") {
                 AccountScreen(
                     onNavigateBack = { navController.navigateUp() },
+                    loginViewModel = loginViewModel,
                     onSignOut = {
                         navController.navigate("login") {
                             popUpTo(0) { inclusive = true }
