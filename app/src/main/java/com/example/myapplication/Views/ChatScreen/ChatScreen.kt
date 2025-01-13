@@ -1,5 +1,6 @@
 package com.example.myapplication.Views.ChatScreen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,12 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.ViewModelProvider
+import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.Utilities.Constants
-import androidx.compose.ui.tooling.preview.Preview
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,21 +40,59 @@ fun ChatScreen(
     }
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = Color.Transparent,
         topBar = {
-            TopAppBar(
-                title = { Text(viewModel.chatName, color = Constants.hubDark) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Geri", tint = Constants.hubDark)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .background(Constants.hubBlue)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Geri",
+                            tint = Color.White
+                        )
                     }
+
+                    // Profil resmi
+                    Image(
+                        painter = rememberAsyncImagePainter(model = viewModel.chatUserPhotoUrl),
+                        contentDescription = "Profil Resmi",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(Color.White),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Text(
+                        text = viewModel.chatName,
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleLarge
+                    )
                 }
-            )
+            }
         }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .padding(top = 0.dp)
         ) {
             // Mesajlar
             LazyColumn(
@@ -99,7 +140,7 @@ fun ChatScreen(
                     }
                 ) {
                     Icon(
-                        Icons.Default.Send, 
+                        Icons.Default.Send,
                         contentDescription = "Gönder",
                         tint = Constants.hubGreen
                     )
@@ -169,7 +210,7 @@ fun ChatScreenPreview() {
         ),
         ChatMessage(
             id = "3",
-            text = "VCD 471 projesi için kaynak araştırması yapıyorum da",
+            text = "VCD 471 projesi için kaynak araştırmaları yapıyorum da",
             senderId = "2",
             timestamp = "10:32"
         )
