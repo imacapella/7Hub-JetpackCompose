@@ -28,12 +28,15 @@ class ChatViewModel : ViewModel() {
         private set
     var chatUserPhotoUrl: String = ""
         private set
+    var isGroupChat: Boolean = false
+        private set
 
     fun loadMessages(chatId: String) {
         // Önce chat bilgilerini al
         firestore.collection("chats").document(chatId).get()
             .addOnSuccessListener { document ->
                 chatName = document.getString("name") ?: ""
+                isGroupChat = document.getBoolean("isGroup") ?: false
                 // Chat'teki diğer kullanıcının ID'sini al
                 val participants = document.get("participants") as? List<String>
                 val otherUserId = participants?.find { it != currentUserId }
