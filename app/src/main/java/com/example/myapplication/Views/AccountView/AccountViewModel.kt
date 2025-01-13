@@ -31,14 +31,22 @@ class AccountViewModel : ViewModel() {
         firestore.collection("users").document(userId)
             .get()
             .addOnSuccessListener { document ->
-                if (document != null) {
+                if (document != null && document.exists()) {
+                    val photoUrl = document.getString("photoUrl")
+                    println("Debug - Photo URL: $photoUrl") // URL'yi kontrol etmek için
+                    
                     _uiState.value = AccountUiState(
                         displayName = document.getString("displayName") ?: "",
                         email = document.getString("email") ?: "",
-                        photoUrl = document.getString("photoUrl"),
+                        photoUrl = photoUrl,
                         studentId = document.getString("studentId") ?: ""
                     )
+                } else {
+                    println("Debug - Document does not exist")
                 }
+            }
+            .addOnFailureListener { e ->
+                println("Debug - Error loading user data: ${e.message}")
             }
     }
 

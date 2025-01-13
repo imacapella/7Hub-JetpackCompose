@@ -1,6 +1,8 @@
 package com.example.myapplication
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Group
@@ -23,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -32,6 +35,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.myapplication.Utilities.Constants
 import com.example.myapplication.Views.AccountView.AccountScreen
 import com.example.myapplication.Views.ChatList.ChatListScreen
 import com.example.myapplication.Views.ChatScreen.ChatScreen
@@ -79,7 +83,6 @@ fun AppBottomNavigation(navController: NavController) {
         BottomNavItem.Reviews,
         BottomNavItem.Account,
         BottomNavItem.Chat,
-        BottomNavItem.Clubs
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -87,6 +90,7 @@ fun AppBottomNavigation(navController: NavController) {
 
     NavigationBar(
         containerColor = Color.White,
+        modifier = Modifier.height(70   .dp)
     ) {
         items.forEach { item ->
             NavigationBarItem(
@@ -94,7 +98,8 @@ fun AppBottomNavigation(navController: NavController) {
                     Icon(
                         imageVector = item.icon,
                         contentDescription = item.label,
-                        tint = Color(0xFF4285F4)
+                        tint = if (currentRoute == item.route) Constants.hubGreen else Color(0xFF4285F4),
+                        modifier = Modifier.size(30.dp)
                     )
                 },
                 label = {
@@ -102,7 +107,7 @@ fun AppBottomNavigation(navController: NavController) {
                         text = item.label,
                         fontSize = 12.sp,
                         textAlign = TextAlign.Center,
-                        color = Color(0xFF4285F4)
+                        color = if (currentRoute == item.route) Constants.hubGreen else Color(0xFF4285F4)
                     )
                 },
                 selected = currentRoute == item.route,
@@ -116,7 +121,7 @@ fun AppBottomNavigation(navController: NavController) {
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF4285F4),
+                    selectedIconColor = Constants.hubGreen,
                     unselectedIconColor = Color(0xFF4285F4),
                     indicatorColor = Color.White
                 )

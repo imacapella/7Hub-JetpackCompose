@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.R
 import com.example.myapplication.Utilities.Constants
@@ -152,14 +153,16 @@ fun AccountScreen(
                     .height(161.06.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = uiState.photoUrl?.let { rememberAsyncImagePainter(it) }
-                        ?: painterResource(id = R.drawable.teacher_1),
+                AsyncImage(
+                    model = uiState.photoUrl.takeIf { !it.isNullOrEmpty() }
+                        ?: R.drawable.teacher_1,
                     contentDescription = "Profile Picture",
                     modifier = Modifier
                         .size(160.5.dp)
                         .clip(CircleShape),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    error = painterResource(id = R.drawable.teacher_1),
+                    placeholder = painterResource(id = R.drawable.teacher_1)
                 )
             }
 
