@@ -1,3 +1,31 @@
+//package com.example.myapplication.Views.ReviewScreen
+
+//data class Review(
+//    val id: Int? = null,
+//    val author: String,
+//    val content: String,
+//    val totalRatings: Int,
+//    val courseId: Int? = null,
+//    val teacherId: Int? = null
+//)
+
+//data class Teacher(
+//    val id: Int,
+//    val name: String,
+//    val totalRatings: Int,
+//    val photo: Int, // Make sure this is non-nullable // Varsayılan resim için nullable hale getirildi
+//    val reviews: List<Review> = emptyList(),
+//    val rating: Float
+//)
+
+//data class Course(
+//    val id: String,
+//    val name: String,
+//    val instructor: String,
+//    val totalRatings: Int,
+//    val reviews: List<Review> = emptyList(),
+//    val code: String = ""
+//)
 package com.example.myapplication.Views.ReviewScreen
 
 data class Review(

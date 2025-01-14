@@ -257,5 +257,5 @@ fun TeacherItem(teacher: Teacher, onTeacherClick: (Teacher) -> Unit) {
             }
         }
     }
-}//sasasa
+}
 
