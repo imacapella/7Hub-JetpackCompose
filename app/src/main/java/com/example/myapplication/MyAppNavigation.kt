@@ -56,9 +56,12 @@ import com.example.myapplication.Views.LoginView.LoginPage
 import com.example.myapplication.Views.LoginView.LoginViewModel
 import com.example.myapplication.Views.ResetPassword.ResetPasswordScreen
 import com.example.myapplication.Views.ResetPassword.ResetPasswordViewModel
+import com.example.myapplication.Views.ReviewScreen.CourseDetailsScreen
 import com.example.myapplication.Views.ReviewScreen.ReviewCoursesScreen
 import com.example.myapplication.Views.ReviewScreen.ReviewScreen
 import com.example.myapplication.Views.ReviewScreen.TeacherDetailsScreen
+import com.example.myapplication.Views.ReviewScreen.dummyCourse1
+import com.example.myapplication.Views.ReviewScreen.dummyCourse2
 import com.example.myapplication.Views.ReviewScreen.dummyTeacher1
 import com.example.myapplication.Views.ReviewScreen.dummyTeacher2
 import com.google.firebase.firestore.ktx.firestore
@@ -87,7 +90,7 @@ fun AppBottomNavigation(navController: NavController) {
 
     NavigationBar(
         containerColor = Color.White,
-        modifier = Modifier.height(70   .dp)
+        modifier = Modifier.height(100.dp)
     ) {
         items.forEach { item ->
             NavigationBarItem(
@@ -197,7 +200,9 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                 CourseDetailScreen(
                     viewModel = CourseDetailViewModel(),
                     courseCode = courseCode,
-                    onBackClick = { navController.navigateUp() },
+                    onBackClick = { 
+                        navController.popBackStack()
+                    },
                     onChatClick = { 
                         // TODO: Navigate to chat screen when implemented
                     }
@@ -241,6 +246,7 @@ fun MainScreen(loginViewModel: LoginViewModel) {
             composable("account") {
                 AccountScreen(
                     onNavigateBack = { navController.navigateUp() },
+                    loginViewModel = loginViewModel,
                     onSignOut = {
                         navController.navigate("login") {
                             popUpTo(0) { inclusive = true }
@@ -249,11 +255,28 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                     navController = navController
                 )
             }
-            composable("coursesReview") { backStackEntry ->
-                val navController = rememberNavController() // Burada navController'ı tanımlıyoruz
+            composable("coursesReview") {
                 ReviewCoursesScreen(
-                    navController = navController,  // navController parametresini buraya geçiriyoruz
+                    navController = navController,
                     onNavigateBack = { navController.navigateUp() }
+                )
+            }
+
+            composable(
+                "coursesReview/{courseId}",
+                arguments = listOf(navArgument("courseId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val courseId = backStackEntry.arguments?.getInt("courseId") ?: return@composable
+                val course = when (courseId) {
+                    1 -> dummyCourse1
+                    2 -> dummyCourse2
+                    else -> return@composable
+                }
+                
+                CourseDetailsScreen(
+                    course = course,
+                    onNavigateBack = { navController.navigateUp() },
+                    onRateCourseClick = { /* Rate işlemi */ }
                 )
             }
 
@@ -344,4 +367,4 @@ fun MainScreen(loginViewModel: LoginViewModel) {
             }
         }
     }
-}
+}//s

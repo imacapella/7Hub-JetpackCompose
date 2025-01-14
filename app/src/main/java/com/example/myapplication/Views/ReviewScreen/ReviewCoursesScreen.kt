@@ -21,13 +21,15 @@ import com.example.myapplication.R
 
 @Composable
 fun ReviewCoursesScreen(
-    navController: NavController, // NavController'ı parametre olarak alıyoruz
-    courses: List<Course> = listOf(
-        Course(id = 1, code = "VCD 471", name = "Interactive Design Studio", instructor = "Merve Çaşkurlu", rating = 5.0f),
-        Course(id = 2, code = "VCD 592", name = "Internship", instructor = "Murat Yılmaz", rating = 2.8f)
-    ),
+    navController: NavController,
     onNavigateBack: () -> Unit = {}
 ) {
+    // Dummy courses listesi
+    val courses = listOf(
+        Course(id = 1, code = "VCD 471", name = "Interactive Design Studio", instructor = "Merve Çaşkurlu", rating = 5.0f),
+        Course(id = 2, code = "VCD 592", name = "Internship", instructor = "Murat Yılmaz", rating = 2.8f)
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,7 +73,10 @@ fun ReviewCoursesScreen(
             items(courses) { course ->
                 CourseItem(
                     course = course,
-                    onCourseClick = { navController.navigate("course_details/${course.id}") }  // Burada doğru şekilde lambda işlevi geçiliyor
+                    onCourseClick = {
+                        // Tıklanan kursun detay sayfasına git
+                        navController.navigate("coursesReview/${course.id}")
+                    }
                 )
             }
         }
@@ -185,10 +190,10 @@ fun CourseItem(
             }
 
             IconButton(
-                onClick = { onCourseClick(course) },  // Buradaki işlevi tetikleme
+                onClick = { onCourseClick(course) },
                 modifier = Modifier
                     .size(40.dp)
-                    .align(Alignment.BottomEnd) // Box içinde sağ alt köşeye hizalama
+                    .align(Alignment.BottomEnd)
                     .padding(bottom = 4.dp)
             ) {
                 Icon(
@@ -200,4 +205,4 @@ fun CourseItem(
             }
         }
     }
-}
+}//commit icin
