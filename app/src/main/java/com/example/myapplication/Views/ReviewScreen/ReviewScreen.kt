@@ -95,6 +95,8 @@ fun ReviewScreen(
 
         LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
             if (selectedTab == "Teachers") {
+                git add .
+                git commit -m "Merge completed"
                 items(teachers) { teacher ->
                     TeacherItem(
                         teacher = teacher,
@@ -258,3 +260,4 @@ fun TeacherItem(teacher: Teacher, onTeacherClick: (Teacher) -> Unit) {
         }
     }
 }
+

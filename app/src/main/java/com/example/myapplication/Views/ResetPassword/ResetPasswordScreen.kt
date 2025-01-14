@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -60,17 +61,15 @@ fun ResetPasswordScreen(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-
+//casdasda
                 CustomButton(
-                    buttonColor = Constants.hubBabyBlue,
-                    buttonText = "Şifre Sıfırlama Maili Gönder",
+                    buttonText = "Send Code",
                     buttonTextColor = Constants.hubWhite,
-                    buttonIcon = Icons.Default.Email,
-                    buttonHeight = 50,
-                    buttonWidth = 250
-                ) {
-                    viewModel.sendResetEmail()
-                }
+                    buttonIcon = Icons.Default.ChevronRight,
+                    onClick = {
+                        viewModel.sendResetEmail()
+                    }
+                )
             } else {
                 Text(
                     text = "Mail adresinize gönderilen linkten şifre değiştirme işlemine devam ediniz.",
@@ -85,13 +84,12 @@ fun ResetPasswordScreen(
                     buttonText = "Giriş Ekranına Dön",
                     buttonTextColor = Constants.hubWhite,
                     buttonIcon = Icons.Default.ArrowBack,
-                    buttonHeight = 50,
-                    buttonWidth = 200
-                ) {
-                    navController.navigate("login") {
-                        popUpTo("login") { inclusive = true }
+                    onClick = {
+                        navController.navigate("login") {
+                            popUpTo("login") { inclusive = true }
+                        }
                     }
-                }
+                )
             }
 
             errorMessage?.let { error ->

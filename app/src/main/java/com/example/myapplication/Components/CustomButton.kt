@@ -25,46 +25,46 @@ import org.w3c.dom.Text
 
 @Composable
 fun CustomButton(
-    buttonColor: Color,
+    buttonColor: Color = Constants.hubAcikYesil,
     buttonText: String = "",
-    buttonTextColor : Color,
+    buttonTextColor: Color = Constants.hubWhite,
     buttonIcon: ImageVector? = null,
-    buttonHeight: Int,
-    buttonWidth: Int,
-
     onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
-            .fillMaxWidth(), // Tüm ekranı kapla
-        contentAlignment = Alignment.Center // İçeriği yatay ve dikey ortala
+            .fillMaxWidth(),
+        contentAlignment = Alignment.Center
     ) {
         Button(
             onClick = onClick,
             modifier = Modifier
-                .height(buttonHeight.dp)
-                .width(buttonWidth.dp)
+                .width(160.dp)
+                .height(50.dp)
                 .shadow(
                     elevation = 10.dp,
-                    shape = RoundedCornerShape(50),
+                    shape = RoundedCornerShape(10.dp),
                     ambientColor = Color.Black.copy(alpha = 0.3f),
                     spotColor = Color.Black.copy(alpha = 0.4f)
                 ),
             colors = ButtonDefaults.buttonColors(
                 containerColor = buttonColor,
                 contentColor = buttonTextColor
-            )
+            ),
+            shape = RoundedCornerShape(10.dp)
         ) {
             Text(
                 fontSize = 16.sp,
                 text = buttonText
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Icon(
-                imageVector = Icons.Rounded.Login,
-                contentDescription = "Icon",
-                tint = Color.White
-            )
+            if (buttonIcon != null) {
+                Icon(
+                    imageVector = buttonIcon,
+                    contentDescription = "Icon",
+                    tint = buttonTextColor
+                )//commşt
+            }
         }
     }
 }
