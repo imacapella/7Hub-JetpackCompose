@@ -48,7 +48,7 @@ fun LoginPage(
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
-                navController.navigate("chatlist") {
+                navController.navigate("home") {
                     // Login ekranına geri dönüşü engelle
                     popUpTo("login") { inclusive = true }
                 }

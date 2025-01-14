@@ -23,6 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.DataLayer.Models.ClubModel
+import com.example.myapplication.DataLayer.Models.ClubTab
 import com.example.myapplication.R
 import com.example.myapplication.Utilities.ClubUtils
 import com.example.myapplication.Utilities.Constants

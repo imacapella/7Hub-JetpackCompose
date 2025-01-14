@@ -46,7 +46,7 @@ fun SplashScreen(onSplashCompleted: () -> Unit) {
 
     Box(
         modifier = Modifier
-            .background(Constants.hubDarkGray)
+            .background(Constants.hubWhite)
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
@@ -58,7 +58,7 @@ fun SplashScreen(onSplashCompleted: () -> Unit) {
                 painter = painterResource(R.drawable.app_logo),
                 contentDescription = "Uygulama Logosu",
                 modifier = Modifier
-                    .size(250.dp)
+                    .size(230.dp)
                     .scale(scaleAndRotation)
                     .rotate(scaleAndRotation * 362f)
             )
