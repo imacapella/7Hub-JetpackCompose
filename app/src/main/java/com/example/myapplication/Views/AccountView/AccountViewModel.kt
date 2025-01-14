@@ -1,6 +1,7 @@
 package com.example.myapplication.Views.AccountView
 
 import androidx.lifecycle.ViewModel
+import com.example.myapplication.Views.LoginView.AuthState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,10 @@ class AccountViewModel : ViewModel() {
 
     init {
         loadUserData()
+    }
+
+    fun signOut() {
+        auth.signOut()
     }
 
     private fun loadUserData() {
@@ -48,9 +53,5 @@ class AccountViewModel : ViewModel() {
             .addOnFailureListener { e ->
                 println("Debug - Error loading user data: ${e.message}")
             }
-    }
-
-    fun signOut() {
-        auth.signOut()
     }
 } 

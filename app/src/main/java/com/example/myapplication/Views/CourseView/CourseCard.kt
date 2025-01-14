@@ -46,7 +46,7 @@ fun CourseCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(130.dp)
+                    .height(155.dp)
                     .background(
                         color = Color(0xFF9EC7F2),
                         shape = RoundedCornerShape(12.dp)
