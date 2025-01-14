@@ -29,6 +29,7 @@ fun CustomButton(
     buttonText: String = "",
     buttonTextColor: Color = Constants.hubWhite,
     buttonIcon: ImageVector? = null,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Box(

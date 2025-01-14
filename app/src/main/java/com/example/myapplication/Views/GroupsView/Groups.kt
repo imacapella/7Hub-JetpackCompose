@@ -279,12 +279,24 @@ fun PreviewNewGroupDialog() {
                 }
             },
             confirmButton = {
-                Button(onClick = { showDialog = false }) {
+                Button(
+                    onClick = { showDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Constants.hubAcikYesil,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
                     Text("Create")
                 }
             },
             dismissButton = {
-                Button(onClick = { showDialog = false }) {
+                Button(
+                    onClick = { showDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                ) {
                     Text("Cancel")
                 }
             }

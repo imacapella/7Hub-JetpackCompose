@@ -60,11 +60,12 @@ fun CourseCard(
                     fontWeight = FontWeight.Bold
                 )
             }
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Course Details
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                //verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text = course.courseName,
