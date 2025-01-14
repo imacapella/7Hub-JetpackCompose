@@ -1,3 +1,261 @@
+
+
+//            // Course Card
+// // Course Card içerisindeki düzenlemeler
+//            // Course Details Card içerisine öğretmen ismini dersin adı altına taşıdık.
+//            Card(
+//                modifier = Modifier
+//                    .width(380.dp)
+//                    .height(169.dp)
+//                    .padding(2.dp)  // Dış boşluk
+//                    .align(Alignment.CenterHorizontally),
+//                shape = RoundedCornerShape(10.dp),
+//                colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9)),
+//                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+//            ) {
+//                Column(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .padding(8.dp)
+//                ) {
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        // Course Code Box
+//                        Box(
+//                            modifier = Modifier
+//                                .width(116.dp)
+//                                .height(46.dp)
+//                                .background(Color(0xFF85C0FF), RoundedCornerShape(8.dp)),
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            Text(
+//                                text = course.code,
+//                                style = TextStyle(
+//                                    fontFamily = OpenSansSemiBold,
+//                                    fontWeight = FontWeight.SemiBold,
+//                                    fontSize = 22.sp,
+//                                    color = Color.White
+//                                )
+//                            )
+//                        }
+//
+//                        Spacer(modifier = Modifier.width(16.dp))
+//
+//                        // Course Name
+//                        Column(modifier = Modifier.weight(1f)) {
+//                            Text(
+//                                text = course.name,
+//                                style = TextStyle(
+//                                    fontFamily = OpenSansSemiBold,
+//                                    fontWeight = FontWeight.SemiBold,
+//                                    fontSize = 16.sp,
+//                                    color = Color(0xFF342E37)
+//                                ),
+//                                maxLines = 2, // İki satırda yazması için
+//                                overflow = TextOverflow.Ellipsis
+//                            )
+//                        }
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(8.dp))
+//
+//                    // Stars under the blue box
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.Start // Sol hizalama
+//                    ) {
+//                        Spacer(modifier = Modifier.width(16.dp)) // Mavi kutunun hizasında olması için
+//                        repeat(5) { index ->
+//                            val starIcon = when {
+//                                index < course.rating.toInt() -> R.drawable.ic_star_filled
+//                                index == course.rating.toInt() && course.rating % 1f != 0f -> R.drawable.ic_star_half
+//                                else -> R.drawable.ic_star_outline
+//                            }
+//                            Icon(
+//                                painter = painterResource(id = starIcon),
+//                                contentDescription = null,
+//                                tint = Color(0xFF5BC658),
+//                                modifier = Modifier.size(19.76.dp)
+//                            )
+//                        }
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(8.dp))
+//
+//
+//                    // Öğretmen ismini kartın ortasında ve üste yakın konumlandırıyoruz
+//                        Text(
+//                            text = course.instructor,
+//                            style = TextStyle(
+//                                fontFamily = OpenSansSemiBold,
+//                                fontWeight = FontWeight.SemiBold,
+//                                fontSize = 14.sp,
+//                                color = Color(0xFF5BC658)
+//                            ),
+//                            modifier = Modifier
+//                                .align(Alignment.CenterHorizontally) // Ortada hizalama
+//                                .offset(y = (-40).dp) // Yukarıya taşıma
+//                        )
+//                    Spacer(modifier = Modifier.height(8.dp))
+//
+//                    // Rate Course Button
+//                    Button(
+//                        onClick = onRateCourseClick,
+//                        modifier = Modifier
+//                            .align(Alignment.End)  // Butonu sağa hizalıyoruz
+//                            .padding(2.dp),
+//                        shape = RoundedCornerShape(20),  // Butonun köşeleri yuvarlatılmış
+//                        colors = ButtonDefaults.buttonColors(
+//                            containerColor = Color.Transparent // Arka planı şeffaf yapıyoruz
+//                        )
+//                    ) {
+//                        Row {
+//                            Text(
+//                                text = "Rate Course",  // Buton metni
+//                                style = TextStyle(
+//                                    fontFamily = OpenSansSemiBold,
+//                                    fontWeight = FontWeight.SemiBold,
+//                                    fontSize = 13.sp,
+//                                    color = Color(0xFF5BC658)  // Yeşil renkli metin
+//                                )
+//                            )
+//                            Spacer(modifier = Modifier.width(8.dp))  // Metin ve ikon arasına boşluk ekliyoruz
+//                            Icon(
+//                                painter = painterResource(id = R.drawable.ic_arrow_right),  // Ok simgesi
+//                                contentDescription = "Arrow Right",
+//                                tint = Color(0xFF5BC658),  // İkonun yeşil rengi
+//                                modifier = Modifier.size(18.dp)  // İkon boyutu
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//
+//
+//
+//
+//
+//            Spacer(modifier = Modifier.height(10.dp))
+//
+//            // Reviews List
+//            LazyColumn(modifier = Modifier.fillMaxSize()) {
+//                items(course.reviews) { review ->
+//                    CourseReviewItem(review = review)
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//
+//@Composable
+//fun CourseReviewScreen(onCourseClick: (Int) -> Unit) {
+//    val courses = listOf(dummyCourse1, dummyCourse2)
+//    LazyColumn {
+//        items(courses) { course ->
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(8.dp)
+//                    .clickable { onCourseClick(course.id) }
+//            ) {
+//                Box(
+//                    modifier = Modifier
+//                        .width(116.dp)
+//                        .height(46.dp)
+//                        .background(Color(0xFF85C0FF), RoundedCornerShape(8.dp)),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Text(
+//                        text = course.code,
+//                        style = TextStyle(
+//                            fontWeight = FontWeight.Bold,
+//                            fontSize = 22.sp,
+//                            color = Color.White
+//                        )
+//                    )
+//                }
+//                Spacer(modifier = Modifier.width(16.dp))
+//                Column {
+//                    Text(
+//                        text = course.name,
+//                        style = TextStyle(
+//                            fontWeight = FontWeight.SemiBold,
+//                            fontSize = 16.sp
+//                        )
+//                    )
+//                    Spacer(modifier = Modifier.height(4.dp))
+//                    Text(
+//                        text = "Rating: ${course.rating}",
+//                        style = TextStyle(fontSize = 14.sp, color = Color.Gray)
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//val dummyCourse1 = Course(
+//    id = 1,
+//    code = "VCD 471",
+//    name = "Interactive Design Studio",
+//    rating = 5f,
+//    totalRatings = 5,
+//    instructor = "Merve Çaşkurlu",
+//    reviews = listOf(
+//        Review(1, "Anonim", "Ders baya iyi.", 5, courseId = 1),
+//        Review(2, "Anonim", "Ders çok zor hiç sevmedim.", 1, courseId = 1),
+//        Review(3, "Anonim", "Tasarım yapmayı sevenler bu dersi seçebilir.", 5, courseId = 1)
+//    )
+//)
+//
+//val dummyCourse2 = Course(
+//    id = 2,
+//    code = "VCD 592",
+//    name = "Internship",
+//    rating = 2.8f,
+//    totalRatings = 3,
+//    instructor = "Murat Yılmaz",
+//    reviews = listOf(
+//        Review(4, "Anonim", "Ders çok faydalı.", 4, courseId = 2),
+//        Review(5, "Anonim", "Zorunlu olması çok kötü.", 2, courseId = 2),
+//        Review(6, "Anonim", "Sevmedim.", 3, courseId = 2)
+//    )
+//)
+//
+//@Composable
+//fun TestCourseDetailsScreen() {
+//    CourseDetailsScreen(
+//        course = dummyCourse1, // veya dummyCourse2
+//        onNavigateBack = { /* Geri gitme işlevi */ },
+//        onRateCourseClick = { /* Rate course işlevi */ }
+//    )
+//}
+//
+//@Composable
+//@Preview(showBackground = true)
+//fun PreviewCourseReviewItem() {
+//    val dummyReview = Review(1, "Anonim", "Ders baya iyi.", 5, courseId = 1)
+//    CourseReviewItem(review = dummyReview)
+//}
+//
+//@Composable
+//@Preview(showBackground = true)
+//fun PreviewCourseDetailsScreen() {
+//    CourseDetailsScreen(
+//        course = dummyCourse1,
+//        onNavigateBack = { /* Geri gitme işlevi */ },
+//        onRateCourseClick = { /* Rate course işlevi */ }
+//    )
+//}
+//
+//@Composable
+//@Preview(showBackground = true)
+//fun PreviewCourseReviewScreen() {
+//    CourseReviewScreen(onCourseClick = { courseId -> /* Course click işlevi */ })
+//}
 package com.example.myapplication.Views.ReviewScreen
 
 import androidx.compose.foundation.Image
@@ -254,18 +512,18 @@ fun CourseDetailsScreen(
 
 
                     // Öğretmen ismini kartın ortasında ve üste yakın konumlandırıyoruz
-                        Text(
-                            text = course.instructor,
-                            style = TextStyle(
-                                fontFamily = OpenSansSemiBold,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 14.sp,
-                                color = Color(0xFF5BC658)
-                            ),
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally) // Ortada hizalama
-                                .offset(y = (-40).dp) // Yukarıya taşıma
-                        )
+                    Text(
+                        text = course.instructor,
+                        style = TextStyle(
+                            fontFamily = OpenSansSemiBold,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            color = Color(0xFF5BC658)
+                        ),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally) // Ortada hizalama
+                            .offset(y = (-40).dp) // Yukarıya taşıma
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
 
                     // Rate Course Button
