@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
@@ -41,7 +40,7 @@ import com.example.myapplication.Views.ChatList.ChatListScreen
 import com.example.myapplication.Views.ChatScreen.ChatScreen
 import com.example.myapplication.Views.ClubsView.ClubDetailScreen
 import com.example.myapplication.Views.ClubsView.ClubDetailViewModel
-import com.example.myapplication.Views.ClubsView.ClubTab
+import com.example.myapplication.DataLayer.Models.ClubTab
 import com.example.myapplication.Views.ClubsView.ClubsScreen
 import com.example.myapplication.Views.ClubsView.ClubsViewModel
 import com.example.myapplication.Views.CourseView.CourseDetailScreen
