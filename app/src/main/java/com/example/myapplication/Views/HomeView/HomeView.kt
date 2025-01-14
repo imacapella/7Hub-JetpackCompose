@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -84,12 +85,6 @@ fun HomeView(
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        TextButton(onClick = {
-            loginViewModel.signout()
-        }) {
-            Text(text = "Sign out")
-        }
-
         SearchBar()
         Spacer(modifier = Modifier.height(15.dp))
 
@@ -150,9 +145,9 @@ fun MyCoursesWithNavButton(navController: NavController) {
             onClick = { navController.navigate("courses") }
         ) {
             Icon(
-                imageVector = Icons.Filled.ArrowForward,
+                imageVector = Icons.Default.ChevronRight,
                 contentDescription = "Navigate to Courses",
-                tint = Color(0xFF9EC7F2)
+                tint = Constants.hubBabyBlue
             )
         }
     }
@@ -204,26 +199,47 @@ fun CategoryCard(
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(containerColor = backgroundColor)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(5.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(65.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = title,
-                color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(5.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Constants.hubWhite,
+                    modifier = Modifier.size(65.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = title,
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(
+                            color = Color.White,
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = "Navigate",
+                        tint = Constants.hubBabyBlue,
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
+            }
         }
     }
 }

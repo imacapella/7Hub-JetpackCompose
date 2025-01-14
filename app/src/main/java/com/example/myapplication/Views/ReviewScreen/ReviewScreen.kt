@@ -105,7 +105,12 @@ fun ReviewScreen(
                 }
             } else {
                 items(courses) { course ->
-                    CourseItem(course = course, onCourseClick = {})
+                    CourseItem(
+                        course = course,
+                        onCourseClick = {
+                            navController.navigate("coursesReview/${course.id}")
+                        }
+                    )
                 }
             }
         }

@@ -29,7 +29,7 @@ fun SplashScreen(onSplashCompleted: () -> Unit) {
     
     val scaleAndRotation by animateFloatAsState(
         targetValue = if (startAnimation) 1f else 0f,
-        animationSpec = tween(1000),
+        animationSpec = tween(1500),
         label = "scale and rotation"
     )
 
@@ -60,7 +60,7 @@ fun SplashScreen(onSplashCompleted: () -> Unit) {
                 modifier = Modifier
                     .size(250.dp)
                     .scale(scaleAndRotation)
-                    .rotate(scaleAndRotation * 360f)
+                    .rotate(scaleAndRotation * 362f)
             )
             
             Text(
