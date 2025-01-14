@@ -38,6 +38,7 @@ import com.example.myapplication.Views.LoginView.LoginViewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.shadow
 
 @Composable
 fun AccountScreen(
@@ -144,21 +145,34 @@ fun AccountScreen(
                 Box(modifier = Modifier.width(48.dp))
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(70.dp))
 
             // Profile Picture
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(161.06.dp),
+                    .height(160.dp),
                 contentAlignment = Alignment.Center
             ) {
+                // Gölge efekti için arka plan
+                Box(
+                    modifier = Modifier
+                        .size(150.dp)
+                        .shadow(
+                            elevation = 20.dp,
+                            shape = CircleShape,
+                            ambientColor = Color.Black.copy(alpha = 0.3f),
+                            spotColor = Color.Black.copy(alpha = 0.3f)
+                        )
+                )
+                
+                // Profil fotoğrafı
                 AsyncImage(
                     model = uiState.photoUrl.takeIf { !it.isNullOrEmpty() }
                         ?: R.drawable.teacher_1,
                     contentDescription = "Profile Picture",
                     modifier = Modifier
-                        .size(160.5.dp)
+                        .size(130.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop,
                     error = painterResource(id = R.drawable.teacher_1),

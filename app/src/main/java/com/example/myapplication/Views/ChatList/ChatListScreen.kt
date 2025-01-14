@@ -1,5 +1,6 @@
 package com.example.myapplication.Views.ChatList
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -121,32 +122,20 @@ fun ChatListScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                listOf("Private Chats", "Group Chats").forEach { tab ->
-                    Card(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 4.dp),
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = 4.dp
-                        ),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        )
-                    ) {
-                        Text(
-                            text = tab,
-                            modifier = Modifier
-                                .clickable { selectedTab = tab }
-                                .padding(vertical = 12.dp)
-                                .fillMaxWidth(),
-                            textAlign = TextAlign.Center,
-                            color = if (selectedTab == tab) Constants.hubGreen else Color.Gray
-                        )
-                    }
-                }
+                TabButton(
+                    text = "Private Chats",
+                    selected = selectedTab == "Private Chats",
+                    onClick = { selectedTab = "Private Chats" }
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                TabButton(
+                    text = "Group Chats",
+                    selected = selectedTab == "Group Chats",
+                    onClick = { selectedTab = "Group Chats" }
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -171,15 +160,17 @@ fun ChatListScreen(
             }
         }
 
-        // FAB
-        FloatingActionButton(
-            onClick = { showNewChatDialog = true },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            containerColor = Constants.hubBabyBlue
-        ) {
-            Icon(Icons.Default.Add, contentDescription = "Yeni Sohbet", tint = Color.White)
+        // FAB - Sadece Private Chats tab'i seçiliyken göster
+        if (selectedTab == "Private Chats") {
+            FloatingActionButton(
+                onClick = { showNewChatDialog = true },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                containerColor = Constants.hubBabyBlue
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Yeni Sohbet", tint = Color.White)
+            }
         }
     }
 
@@ -205,26 +196,40 @@ fun TabButton(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    Button(
-        onClick = onClick,
+    Box(
         modifier = Modifier
-            .height(46.dp)
-            .width(196.dp)
-            .padding(horizontal = 4.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFF3F3F3)
-        ),
-        elevation = ButtonDefaults.buttonElevation(
-            defaultElevation = 4.dp,
-            pressedElevation = 6.dp
-        ),
-        shape = MaterialTheme.shapes.medium
+            .height(60.dp)
+            .width(180.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = text,
-            color = if (selected) Constants.hubGreen else Constants.hubGreen,
-            style = MaterialTheme.typography.labelLarge
-        )
+        Button(
+            onClick = {
+                Log.d("ButtonClicked", "$text button clicked")
+                onClick()
+            },
+            modifier = Modifier
+                .height(if (selected) 46.dp else 42.dp)
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFF3F3F3)
+            ),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 4.dp,
+                pressedElevation = 6.dp
+            ),
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = text,
+                    color = Constants.hubGreen,
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1
+                )
+            }
+        }
     }
 }
 

@@ -90,7 +90,7 @@ fun AppBottomNavigation(navController: NavController) {
 
     NavigationBar(
         containerColor = Color.White,
-        modifier = Modifier.height(70   .dp)
+        modifier = Modifier.height(100.dp)
     ) {
         items.forEach { item ->
             NavigationBarItem(

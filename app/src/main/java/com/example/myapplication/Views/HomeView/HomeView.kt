@@ -14,12 +14,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.*
@@ -31,7 +25,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.myapplication.DataLayer.Models.CourseModel
 import com.example.myapplication.Utilities.Constants
 import com.example.myapplication.Views.LoginView.AuthState
 import com.example.myapplication.Views.LoginView.LoginViewModel
@@ -64,29 +57,30 @@ fun HomeView(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF3F3F3))
-            .padding(12.dp)
-    ) {
-        TitleCircle()
-        Text(
-            text = "Hey, ${userName ?: "Student"}!",
-            style = MaterialTheme.typography.headlineMedium,
-            fontSize = 35.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 2.dp)
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF3F3F3))
+                .padding(12.dp)
+        ) {
+            TitleCircle()
+            Spacer(modifier = Modifier.height(15.dp))
+            Text(
+                text = "Hey, ${userName?.split(" ")?.firstOrNull() ?: "Student"}!",
+                style = MaterialTheme.typography.headlineMedium,
+                fontSize = 35.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 2.dp)
+            )
         Text(
             text = studentId ?: "",
             fontSize = 16.sp,
             color = Color(0xFF88B04B),
             modifier = Modifier.padding(bottom = 8.dp)
         )
-
+        Spacer(modifier = Modifier.height(12.dp))
         SearchBar()
-        Spacer(modifier = Modifier.height(15.dp))
+        Spacer(modifier = Modifier.height(25.dp))
 
         CategorySection(navController)
         Spacer(modifier = Modifier.height(12.dp))
@@ -121,8 +115,6 @@ fun TitleCircle() {
         )
     }
 }
-
-
 
 @Composable
 fun MyCoursesWithNavButton(navController: NavController) {
