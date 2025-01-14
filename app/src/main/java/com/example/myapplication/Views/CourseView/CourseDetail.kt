@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.myapplication.R
 import com.example.myapplication.Utilities.Constants
 
 @Composable
@@ -190,7 +191,7 @@ fun CourseDetailScreen(
                         ) {
                             AsyncImage(
                                 model = displayState.instructorImageUrl.ifEmpty { 
-                                    "https://yulearnt.yeditepe.edu.tr/sites/default/files/styles/mt_photo/public/2022-02/engin_0.jpg?itok=L2QwLSvM"
+                                    R.drawable.app_logo
                                 },
                                 contentDescription = "Instructor image",
                                 modifier = Modifier

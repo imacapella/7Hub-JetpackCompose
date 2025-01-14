@@ -169,14 +169,14 @@ fun AccountScreen(
                 // Profil fotoğrafı
                 AsyncImage(
                     model = uiState.photoUrl.takeIf { !it.isNullOrEmpty() }
-                        ?: R.drawable.teacher_1,
+                        ?: R.drawable.profilepictureanonim,
                     contentDescription = "Profile Picture",
                     modifier = Modifier
                         .size(130.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop,
-                    error = painterResource(id = R.drawable.teacher_1),
-                    placeholder = painterResource(id = R.drawable.teacher_1)
+                    error = painterResource(id = R.drawable.profilepictureanonim),
+                    placeholder = painterResource(id = R.drawable.profilepictureanonim)
                 )
             }
 

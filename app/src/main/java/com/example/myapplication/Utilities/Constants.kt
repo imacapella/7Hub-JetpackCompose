@@ -14,18 +14,4 @@ object Constants {
     val hubDarkGray = Color(0xFF342E37) // Koyu gri
     val hubGray = Color(0xFF5F5464) // Gri
     //*********
-
-    //*********
-    //CHAT CONSTANTS
-    const val TAG = "flash-chat"
-
-    const val MESSAGES = "messages"
-    const val MESSAGE = "message"
-    const val SENT_BY = "sent_by"
-    const val SENT_ON = "sent_on"
-    const val IS_CURRENT_USER = "is_current_user"
-    //*********
-
-
-
 }
