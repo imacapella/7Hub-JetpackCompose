@@ -4,14 +4,18 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.DataLayer.Models.CourseModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FieldValue
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-data class CourseDetailUiState(
+
+                                                                                                                                                        data class CourseDetailUiState(
     val isLoading: Boolean = true,
     val identifier: String = "",
     val courseName: String = "",
@@ -30,6 +34,8 @@ data class CourseDetailUiState(
 
 class CourseDetailViewModel : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private val currentUserId = auth.currentUser?.uid
     private val _uiState = MutableStateFlow(CourseDetailUiState())
     val uiState: StateFlow<CourseDetailUiState> = _uiState.asStateFlow()
 
@@ -101,6 +107,90 @@ class CourseDetailViewModel : ViewModel() {
             }
             .addOnFailureListener { e ->
                 Log.e("CourseDetailViewModel", "Error loading instructor details", e)
+            }
+    }
+
+    fun joinOrCreateCourseChat(courseCode: String, onSuccess: (String) -> Unit) {
+        if (currentUserId == null) return
+
+        // Önce bu koda sahip bir chat grubu var mı kontrol et
+        firestore.collection("chats")
+            .whereEqualTo("name", courseCode)
+            .whereEqualTo("type", "GROUP")
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    // Chat grubu yok, yeni oluştur
+                    createNewCourseChat(courseCode, onSuccess)
+                } else {
+                    // Chat grubu var, kullanıcıyı ekle
+                    val chatId = documents.documents.first().id
+                    addUserToChat(chatId, onSuccess)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("CourseDetailViewModel", "Error checking course chat", e)
+            }
+    }
+
+    private fun createNewCourseChat(courseCode: String, onSuccess: (String) -> Unit) {
+        val chatData = hashMapOf(
+            "name" to courseCode,
+            "type" to "GROUP",
+            "createdAt" to com.google.firebase.Timestamp.now(),
+            "lastMessage" to "",
+            "lastMessageTimestamp" to com.google.firebase.Timestamp.now(),
+            "participants" to listOf(currentUserId),
+            "isClassGroup" to true
+        )
+
+        firestore.collection("chats")
+            .add(chatData)
+            .addOnSuccessListener { documentRef ->
+                val chatId = documentRef.id
+                
+                // Kullanıcının userChats koleksiyonuna da ekle
+                val userChatData = hashMapOf(
+                    "lastMessageTimestamp" to com.google.firebase.Timestamp.now(),
+                    "unreadCount" to 0
+                )
+
+                firestore.collection("userChats")
+                    .document(currentUserId!!)
+                    .collection("chats")
+                    .document(chatId)
+                    .set(userChatData)
+                    .addOnSuccessListener {
+                        onSuccess(chatId)
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("CourseDetailViewModel", "Error creating course chat", e)
+            }
+    }
+
+    private fun addUserToChat(chatId: String, onSuccess: (String) -> Unit) {
+        // Önce participants listesini güncelle
+        firestore.collection("chats").document(chatId)
+            .update("participants", FieldValue.arrayUnion(currentUserId))
+            .addOnSuccessListener {
+                // Sonra userChats koleksiyonuna ekle
+                val userChatData = hashMapOf(
+                    "lastMessageTimestamp" to com.google.firebase.Timestamp.now(),
+                    "unreadCount" to 0
+                )
+
+                firestore.collection("userChats")
+                    .document(currentUserId!!)
+                    .collection("chats")
+                    .document(chatId)
+                    .set(userChatData)
+                    .addOnSuccessListener {
+                        onSuccess(chatId)
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("CourseDetailViewModel", "Error adding user to chat", e)
             }
     }
 }

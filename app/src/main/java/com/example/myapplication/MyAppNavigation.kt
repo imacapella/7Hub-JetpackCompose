@@ -73,7 +73,6 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: 
     object Reviews : BottomNavItem("reviews", Icons.Default.Star, "Reviews")
     object Account : BottomNavItem("account", Icons.Default.Person, "Account")
     object Chat : BottomNavItem("chatlist", Icons.Default.Chat, "Chat")
-    object Clubs : BottomNavItem("clubs", Icons.Default.Group, "Clubs")
 }
 
 @Composable
@@ -197,14 +196,18 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                 arguments = listOf(navArgument("courseCode") { type = NavType.StringType })
             ) { backStackEntry ->
                 val courseCode = backStackEntry.arguments?.getString("courseCode") ?: return@composable
+                val viewModel = remember { CourseDetailViewModel() }
+                
                 CourseDetailScreen(
-                    viewModel = CourseDetailViewModel(),
+                    viewModel = viewModel,
                     courseCode = courseCode,
                     onBackClick = { 
                         navController.popBackStack()
                     },
                     onChatClick = { 
-                        // TODO: Navigate to chat screen when implemented
+                        viewModel.joinOrCreateCourseChat(courseCode) { chatId ->
+                            navController.navigate("chat/$chatId")
+                        }
                     }
                 )
             }
