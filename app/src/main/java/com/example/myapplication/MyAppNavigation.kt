@@ -1,58 +1,79 @@
 package com.example.myapplication
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavType
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.myapplication.Utilities.Constants
+import com.example.myapplication.Views.AccountView.AccountScreen
+import com.example.myapplication.Views.ChatList.ChatListScreen
 import com.example.myapplication.Views.ChatScreen.ChatScreen
+import com.example.myapplication.Views.ClubsView.ClubDetailScreen
+import com.example.myapplication.Views.ClubsView.ClubDetailViewModel
+import com.example.myapplication.Views.ClubsView.ClubTab
+import com.example.myapplication.Views.ClubsView.ClubsScreen
+import com.example.myapplication.Views.ClubsView.ClubsViewModel
+import com.example.myapplication.Views.CourseView.CourseDetailScreen
+import com.example.myapplication.Views.CourseView.CourseDetailViewModel
 import com.example.myapplication.Views.CourseView.CoursesScreen
+import com.example.myapplication.Views.CourseView.CoursesViewModel
 import com.example.myapplication.Views.GroupsView.GroupsScreen
+import com.example.myapplication.Views.HelpView.HelpScreen
 import com.example.myapplication.Views.HomeView
 import com.example.myapplication.Views.LoginView.AuthState
 import com.example.myapplication.Views.LoginView.LoginPage
 import com.example.myapplication.Views.LoginView.LoginViewModel
 import com.example.myapplication.Views.ResetPassword.ResetPasswordScreen
 import com.example.myapplication.Views.ResetPassword.ResetPasswordViewModel
-import com.example.myapplication.Views.ChatList.ChatListScreen
-import com.example.myapplication.Views.ReviewScreen.ReviewScreen
-import com.example.myapplication.Views.CourseView.CourseDetailScreen
-import com.example.myapplication.Views.CourseView.CourseDetailViewModel
+import com.example.myapplication.Views.ReviewScreen.CourseDetailsScreen
 import com.example.myapplication.Views.ReviewScreen.ReviewCoursesScreen
-import com.example.myapplication.Views.ClubsView.ClubsScreen
-import com.example.myapplication.Views.ClubsView.ClubsViewModel
-import com.example.myapplication.Views.ClubsView.ClubsScreen
-import com.example.myapplication.Views.ClubsView.ClubDetailScreen
-import com.example.myapplication.Views.ClubsView.ClubDetailViewModel
+import com.example.myapplication.Views.ReviewScreen.ReviewScreen
 import com.example.myapplication.Views.ReviewScreen.TeacherDetailsScreen
-import com.example.myapplication.Views.ReviewScreen.dummyTeacher1
-import com.example.myapplication.Views.ReviewScreen.dummyTeacher2
-import com.example.myapplication.Views.AccountView.AccountScreen
-import com.example.myapplication.Views.CourseView.CoursesViewModel
-import com.example.myapplication.Views.HelpView.HelpScreen
 import com.example.myapplication.Views.ReviewScreen.dummyCourse1
 import com.example.myapplication.Views.ReviewScreen.dummyCourse2
-import com.example.myapplication.Views.ReviewScreen.CourseDetailsScreen
+import com.example.myapplication.Views.ReviewScreen.dummyTeacher1
+import com.example.myapplication.Views.ReviewScreen.dummyTeacher2
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Home : BottomNavItem("home", Icons.Default.Home, "Home")
     object Reviews : BottomNavItem("reviews", Icons.Default.Star, "Reviews")
     object Account : BottomNavItem("account", Icons.Default.Person, "Account")
     object Chat : BottomNavItem("chatlist", Icons.Default.Chat, "Chat")
+    object Clubs : BottomNavItem("clubs", Icons.Default.Group, "Clubs")
 }
 
 @Composable
@@ -61,7 +82,7 @@ fun AppBottomNavigation(navController: NavController) {
         BottomNavItem.Home,
         BottomNavItem.Reviews,
         BottomNavItem.Account,
-        BottomNavItem.Chat
+        BottomNavItem.Chat,
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -69,6 +90,7 @@ fun AppBottomNavigation(navController: NavController) {
 
     NavigationBar(
         containerColor = Color.White,
+        modifier = Modifier.height(70   .dp)
     ) {
         items.forEach { item ->
             NavigationBarItem(
@@ -76,7 +98,8 @@ fun AppBottomNavigation(navController: NavController) {
                     Icon(
                         imageVector = item.icon,
                         contentDescription = item.label,
-                        tint = Color(0xFF4285F4)
+                        tint = if (currentRoute == item.route) Constants.hubGreen else Color(0xFF4285F4),
+                        modifier = Modifier.size(30.dp)
                     )
                 },
                 label = {
@@ -84,7 +107,7 @@ fun AppBottomNavigation(navController: NavController) {
                         text = item.label,
                         fontSize = 12.sp,
                         textAlign = TextAlign.Center,
-                        color = Color(0xFF4285F4)
+                        color = if (currentRoute == item.route) Constants.hubGreen else Color(0xFF4285F4)
                     )
                 },
                 selected = currentRoute == item.route,
@@ -98,7 +121,7 @@ fun AppBottomNavigation(navController: NavController) {
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF4285F4),
+                    selectedIconColor = Constants.hubGreen,
                     unselectedIconColor = Color(0xFF4285F4),
                     indicatorColor = Color.White
                 )
@@ -111,6 +134,7 @@ fun AppBottomNavigation(navController: NavController) {
 fun MainScreen(loginViewModel: LoginViewModel) {
     val navController = rememberNavController()
     val authState by loginViewModel.authState.observeAsState()
+    val db = remember { Firebase.firestore }
 
     LaunchedEffect(authState) {
         when (authState) {
@@ -176,7 +200,9 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                 CourseDetailScreen(
                     viewModel = CourseDetailViewModel(),
                     courseCode = courseCode,
-                    onBackClick = { navController.navigateUp() },
+                    onBackClick = { 
+                        navController.popBackStack()
+                    },
                     onChatClick = { 
                         // TODO: Navigate to chat screen when implemented
                     }
@@ -220,6 +246,7 @@ fun MainScreen(loginViewModel: LoginViewModel) {
             composable("account") {
                 AccountScreen(
                     onNavigateBack = { navController.navigateUp() },
+                    loginViewModel = loginViewModel,
                     onSignOut = {
                         navController.navigate("login") {
                             popUpTo(0) { inclusive = true }
@@ -228,19 +255,51 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                     navController = navController
                 )
             }
-            composable("coursesReview") { backStackEntry ->
-                val navController = rememberNavController() // Burada navController'ı tanımlıyoruz
+            composable("coursesReview") {
                 ReviewCoursesScreen(
-                    navController = navController,  // navController parametresini buraya geçiriyoruz
+                    navController = navController,
                     onNavigateBack = { navController.navigateUp() }
                 )
             }
 
-            composable("clubs") {
-                ClubsScreen(
+            composable(
+                "coursesReview/{courseId}",
+                arguments = listOf(navArgument("courseId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val courseId = backStackEntry.arguments?.getInt("courseId") ?: return@composable
+                val course = when (courseId) {
+                    1 -> dummyCourse1
+                    2 -> dummyCourse2
+                    else -> return@composable
+                }
+                
+                CourseDetailsScreen(
+                    course = course,
                     onNavigateBack = { navController.navigateUp() },
+                    onRateCourseClick = { /* Rate işlemi */ }
+                )
+            }
+
+            composable("clubs") {
+                val viewModel: ClubsViewModel = viewModel()
+                val selectedTab by viewModel.selectedTab.collectAsState()
+
+                ClubsScreen(
+                    viewModel = viewModel,
+                    onNavigateBack = { 
+                        navController.navigate("home") {
+                            popUpTo("home") { inclusive = false }
+                        }
+                    },
                     onClubClick = { club ->
-                        navController.navigate("club_detail/${club.clubId}")
+                        when (selectedTab) {
+                            ClubTab.MY_CLUBS -> {
+                                navController.navigate("chat/${club.chatId}")
+                            }
+                            ClubTab.ALL_CLUBS -> {
+                                navController.navigate("club_detail/${club.clubId}")
+                            }
+                        }
                     }
                 )
             }
@@ -250,10 +309,36 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                 arguments = listOf(navArgument("clubId") { type = NavType.StringType })
             ) { backStackEntry ->
                 val clubId = backStackEntry.arguments?.getString("clubId") ?: return@composable
+                val viewModel = remember { ClubDetailViewModel() }
+                
+                LaunchedEffect(clubId) {
+                    try {
+                        val club = db.collection("clubs")
+                            .document(clubId)
+                            .get()
+                            .await()
+                            
+                        viewModel.updateClubDetails(
+                            clubName = club.getString("name") ?: "",
+                            clubDescription = club.getString("description") ?: "",
+                            clubIcon = club.getString("icon") ?: "default",
+                            memberCount = (club.get("members") as? List<*>)?.size ?: 0
+                        )
+                    } catch (e: Exception) {
+                        println("Hata: ${e.message}")
+                    }
+                }
                 ClubDetailScreen(
-                    viewModel = ClubDetailViewModel(),
+                    viewModel = viewModel,
                     onBackClick = { navController.navigateUp() },
-                    onJoinClubClick = { /* Kulübe katılma işlemi */ }
+                    onJoinClubClick = {
+                        navController.navigate("chatlist") {
+                            popUpTo("chatlist") { inclusive = true }
+                        }
+                    },
+                    onJoinError = { errorMessage: String ->  
+                        println("Hata: $errorMessage")
+                    }
                 )
             }
 
@@ -274,27 +359,6 @@ fun MainScreen(loginViewModel: LoginViewModel) {
                     onRateTeacherClick = { /* Rate işlemi */ }
                 )
             }
-            composable(
-                "course_details/{courseId}",
-                arguments = listOf(navArgument("courseId") { type = NavType.IntType })
-            ) { backStackEntry ->
-                val courseId = backStackEntry.arguments?.getInt("courseId") ?: return@composable
-                val course = when (courseId) {
-                    1 -> dummyCourse1
-                    2 -> dummyCourse2
-                    else -> return@composable
-                }
-
-                CourseDetailsScreen(
-                    course = course,
-                    onNavigateBack = { navController.navigateUp() },
-                    onRateCourseClick = { /* Derecelendirme işlemi */ }
-                )
-            }
-
-
-
-
 
             composable("help") {
                 HelpScreen(
@@ -303,4 +367,4 @@ fun MainScreen(loginViewModel: LoginViewModel) {
             }
         }
     }
-}
+}//s

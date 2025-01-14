@@ -208,7 +208,6 @@ open class ChatListViewModel : ViewModel() {
                             }
 
                             val message = hashMapOf(
-                                "text" to "Grup oluşturuldu",
                                 "senderId" to userId,
                                 "timestamp" to Timestamp.now()
                             )
@@ -218,7 +217,7 @@ open class ChatListViewModel : ViewModel() {
                                     // Son mesajı güncelle
                                     chatRef.update(
                                         mapOf(
-                                            "lastMessage" to "Grup oluşturuldu",
+                                            "lastMessage" to "",
                                             "lastMessageTimestamp" to Timestamp.now()
                                         )
                                     )

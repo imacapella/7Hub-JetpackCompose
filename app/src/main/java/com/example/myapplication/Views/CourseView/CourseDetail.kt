@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -63,16 +64,16 @@ fun CourseDetailScreen(
         ) {
             val circleRadius = 800.dp.toPx()
             val circleCenterX = size.width / 2
-            val circleCenterY = -circleRadius + 210f
+            val circleCenterY = -circleRadius + 230f
 
             drawCircle(
-                color = Constants.hubBabyBlue,
+                color = Constants.hubBlue,
                 radius = circleRadius,
                 center = Offset(circleCenterX, circleCenterY)
             )
         }
 
-        // Back button - Always visible
+        // Back button
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
@@ -88,24 +89,20 @@ fun CourseDetailScreen(
 
         when {
             uiState.isLoading && lastValidState == null -> {
-                Log.d("CourseDetailScreen", "Showing loading indicator")
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = Constants.hubGreen)
-                }
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Constants.hubGreen
+                )
             }
             else -> {
-                Log.d("CourseDetailScreen", "Showing course details")
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp)
+                        .padding(horizontal = 24.dp)
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier.height(60.dp))
+                    Spacer(modifier = Modifier.height(150.dp))  // TopBar'dan sonra boşluk
 
                     // Course code badge
                     Surface(
@@ -125,19 +122,17 @@ fun CourseDetailScreen(
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontSize = 28.sp
                                 ),
-                                modifier = Modifier
-                                    .width(129.dp)
-                                    .height(35.dp),
                                 textAlign = TextAlign.Center
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Rating stars
                     Row(
-                        horizontalArrangement = Arrangement.Center
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.padding(vertical = 8.dp)
                     ) {
                         repeat(5) { index ->
                             Icon(
@@ -151,149 +146,52 @@ fun CourseDetailScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Course details
+                    // Course Name
                     Text(
                         text = displayState.courseName,
-                        style = MaterialTheme.typography.headlineMedium,
-                        textAlign = TextAlign.Center
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = Constants.hubDark
+                        ),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 16.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // Course Description
+                    // Description
                     if (displayState.courseDesc.isNotEmpty()) {
                         Text(
-                            text = "Description",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
                             text = displayState.courseDesc,
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 24.sp,
+                            modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                    // Credits
-                    Text(
-                        text = "Credits: ${displayState.courseCredit}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
 
-                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // Instructor Name
-                    if (displayState.instructor.isNotEmpty()) {
-                        Text(
-                            text = "Instructor: ${displayState.instructor}",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-
-                    // Semester
-                    if (displayState.semester.isNotEmpty()) {
-                        Text(
-                            text = "Semester: ${displayState.semester}",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-
-                    // Prerequisites
-                    if (displayState.prerequisites.isNotEmpty()) {
-                        Text(
-                            text = "Prerequisites",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        displayState.prerequisites.forEach { prerequisite ->
-                            Text(
-                                text = "• $prerequisite",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-
-                    // Syllabus
-                    if (displayState.syllabus.isNotEmpty()) {
-                        Text(
-                            text = "Syllabus",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = displayState.syllabus,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-
-                    // Announcements
-                    if (displayState.announcements.isNotEmpty()) {
-                        Text(
-                            text = "Announcements",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        displayState.announcements.forEach { announcement ->
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                            ) {
-                                Text(
-                                    text = announcement,
-                                    modifier = Modifier.padding(8.dp),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    // Course Actions
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Button(
-                            onClick = { 
-                                Log.d("CourseDetailScreen", "Join chat button clicked")
-                                onChatClick()
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Constants.hubGreen
-                            ),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text("Sohbete Katıl")
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    // Instructor section with image
+                    // Instructor section
                     if (displayState.instructor.isNotEmpty()) {
                         Text(
                             text = "Instructor:",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            modifier = Modifier.padding(bottom = 16.dp)
                         ) {
                             AsyncImage(
-                                model = displayState.instructorImageUrl,
+                                model = displayState.instructorImageUrl.ifEmpty { 
+                                    "https://yulearnt.yeditepe.edu.tr/sites/default/files/styles/mt_photo/public/2022-02/engin_0.jpg?itok=L2QwLSvM"
+                                },
                                 contentDescription = "Instructor image",
                                 modifier = Modifier
                                     .size(64.dp)
@@ -307,8 +205,42 @@ fun CourseDetailScreen(
                                 color = Constants.hubGreen
                             )
                         }
-
                     }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // Chat Button
+                    Button(
+                        onClick = onChatClick,
+                        modifier = Modifier
+                            .width(110.dp)
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Constants.hubGreen
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Chat",
+                                color = Color.White,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
             }
         }

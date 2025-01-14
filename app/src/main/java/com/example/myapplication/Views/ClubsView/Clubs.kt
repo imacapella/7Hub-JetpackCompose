@@ -24,7 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.R
+import com.example.myapplication.Utilities.ClubUtils
 import com.example.myapplication.Utilities.Constants
+import com.example.myapplication.Views.ChatList.TabButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +37,8 @@ fun ClubsScreen(
 ) {
     val clubs by viewModel.clubs.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
 
     Column(
         modifier = Modifier
@@ -80,19 +84,47 @@ fun ClubsScreen(
             )
         }
 
-        // Clubs List
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(clubs) { club ->
-                ClubCard(club = club, onClick = { onClubClick(club) })
+        // Content
+        when {
+            isLoading -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Constants.hubGreen
+                    )
+                }
+            }
+            error != null -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Text(
+                        text = error ?: "",
+                        color = Color.Red,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp)
+                    )
+                }
+            }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(clubs) { club ->
+                        ClubCard(
+                            club = club,
+                            onClick = { onClubClick(club) },
+                            showArrow = selectedTab == ClubTab.MY_CLUBS
+                        )
+                    }
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun TabButton(
@@ -126,7 +158,8 @@ fun TabButton(
 @Composable
 fun ClubCard(
     club: ClubModel,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    showArrow: Boolean = false
 ) {
     Card(
         modifier = Modifier
@@ -155,7 +188,7 @@ fun ClubCard(
                 color = Constants.hubBabyBlue
             ) {
                 Icon(
-                    painter = painterResource(id = getClubIcon(club.clubIcon)),
+                    painter = painterResource(id = ClubUtils.getClubIcon(club.clubIcon)),
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier
@@ -180,26 +213,13 @@ fun ClubCard(
             }
 
             // Arrow Icon
-            Icon(
-                imageVector = Icons.Default.ChevronRight,
-                contentDescription = "View Club",
-                tint = Constants.hubGreen
-            )
+            if (showArrow) {
+                Icon(
+                    imageVector = Icons.Default.ChevronRight,
+                    contentDescription = "Go to Chat",
+                    tint = Constants.hubGreen
+                )
+            }
         }
     }
 }
-
-fun getClubIcon(iconName: String): Int {
-    return when (iconName.lowercase()) {
-        "cinema" -> R.drawable.ic_cinema
-        "theatre" -> R.drawable.ic_theatre
-        "music" -> R.drawable.ic_music
-        else -> R.drawable.ic_default_club
-    }
-}
-
-@Preview
-@Composable
-fun ClubsScreenPreview() {
-    ClubsScreen()
-} 
