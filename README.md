@@ -138,7 +138,7 @@ This project helped improve my understanding and skills in:
 ┃ ┃ ┃ ┃ ┃ ┣ 📄 teacher_1.png  
 ┃ ┃ ┃ ┃ ┃ ┗ 📄 ... (20+ asset)  
 ┃ ┣ 📄 build.gradle  
-┗ ┗ 📄 ... (Diğer root dosyalar)
+┗ ┗ 📄 ... (Other root folders)
 
 
 ### 🗂️ Key Directories
